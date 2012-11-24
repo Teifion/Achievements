@@ -1,12 +1,15 @@
 from sqlalchemy import (
     Column,
-    Boolean,
     DateTime,
     Integer,
     Interval,
     Text,
     String,
     ForeignKey,
+)
+
+from sqlalchemy.dialects.postgresql import (
+    ARRAY,
 )
 
 # You will need to point this to wherever your declarative base is
@@ -30,13 +33,13 @@ class AchievementType(Base):
     # Some achievements expire after a certain amount of time
     duration = Column(Interval, nullable=True)
     
-    def __init__(self, lookup, name, description, points=0, activation_count=1, duration=None):
-        self.lookup            = lookup
-        self.name              = name
-        self.description       = description
-        self.points            = points
-        self.activation_count  = activation_count
-        self.duration          = duration
+    def __init__(self, lookup, name, description, points=0, activation_count=1, duration=None, section="", sub_section=""):
+        self.lookup           = lookup
+        self.name             = name
+        self.description      = description
+        self.points           = points
+        self.activation_count = activation_count
+        self.duration         = duration
 
 class Achievement(Base):
     __tablename__ = 'achievements'
@@ -50,3 +53,9 @@ class Achievement(Base):
     expires       = Column(DateTime, nullable=True)
     
     activation_count = Column(Integer, nullable=False, default=0)
+
+class AchievementShowcase(Base):
+    __tablename__ = 'achievement_showcase'
+    id            = Column(Integer, primary_key=True)
+    user          = Column(Integer, ForeignKey("users.id"), nullable=False)
+    items         = Column(ARRAY(Integer), nullable=False, default=[])

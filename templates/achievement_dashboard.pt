@@ -12,8 +12,37 @@
             display: inline-block;
             width: 150px;
             height: 150px;
-            border: 1px solid #CCC;
-            margin: 0 20px;
+            border: 0px solid #CCC;
+            margin: 0 15px;
+        }
+        
+        .recents
+        {
+            float: right;
+            width: 150px;
+            border: 1px solid #AAA;
+            text-align:center;
+            padding: 10px 0 10px;
+        }
+        
+        .recent_wrapper
+        {
+            display: inline-block;
+            border: 0px solid #AAA;
+            margin: 15px 15px;
+        }
+        
+        .recent_wrapper strong
+        {
+            font-size: 1.1em;
+        }
+        
+        .recent_icon
+        {
+            width: 75px;
+            height: 75px;
+            border: 0px solid #CCC;
+            margin-bottom: 5px;
         }
     </style>
     
@@ -26,35 +55,34 @@
             This is still a work in progress. As with Wordy I am writing this my free time. If you have any suggestions then please let me know.
         </div>
         
+        <div class="recents">
+            <h3>Recent achievements</h3>
+            <div class="recent_wrapper" tal:repeat="a recents">
+                <div class="recent_icon">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(achievement_types[a.item].lookup))}" width="75" height="75"/>
+                </div>
+                <strong>${achievement_types[a.item].name}</strong><br />
+                ${a.first_awarded.strftime("%d/%m/%Y")}
+            </div>
+        </div>
+        
         <div class="showcase">
             <h3>Showcase</h3>
             
-            <div class="showcase_icon">
-                1
-            </div>
-            <div class="showcase_icon">
-                2
-            </div>
-            <div class="showcase_icon">
-                3
-            </div>
-            <div class="showcase_icon">
-                4
-            </div>
-            <div class="showcase_icon">
-                4
+            <div class="showcase_icon" tal:repeat="s showcase">
+                <img src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(achievement_types[s].lookup))}" width="150" height="150"/>
             </div>
         </div>
         
         
-        <div style="float:right; width:49%;">
+        <div style="float:right; width:40%;">
             <h4>Incomplete</h4>
             <div style="" tal:repeat="a pending">
                 ${achievement_types[a.item].name}
             </div>
         </div>
         
-        <div style="float:left; width:49%;">
+        <div style="float:left; width:40%;">
             <h4>Completed</h4>
             <div style="" tal:repeat="a completed">
                 ${achievement_types[a.item].name}

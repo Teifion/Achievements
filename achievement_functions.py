@@ -14,14 +14,14 @@ def register(achievement_list):
     achievement_list = [AchievementType(*a) if type(a) == tuple else a for a in achievement_list]
     
     # Who are we missing?
-    names = [a.name for a in achievement_list]
+    names = [a.lookup for a in achievement_list]
     found = []
-    for n in DBSession.query(AchievementType.name).filter(AchievementType.name.in_(names)):
+    for n in DBSession.query(AchievementType.lookup).filter(AchievementType.lookup.in_(names)):
         found.append(n[0])
     
     with transaction.manager:
         for a in achievement_list:
-            if a.name not in found:
+            if a.lookup not in found:
                 DBSession.add(a)
 
 def give_achievement(achievement_lookup, user_id, acount=1):
