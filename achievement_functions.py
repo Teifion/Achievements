@@ -5,6 +5,12 @@ from ...models import (
 import datetime
 from .achievement_models import AchievementType, Achievement
 import transaction
+from collections import OrderedDict
+
+"""
+Sections is used to decide how to list/group the achievements on the dashboard page.
+"""
+sections = {}
 
 def register(achievement_list):
     """Takes a list of achievement type (or dict) and ensures they exist

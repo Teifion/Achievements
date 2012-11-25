@@ -1,0 +1,26 @@
+<div metal:use-macro="layout">
+    <style type="text/css" media="screen" metal:fill-slot="css">
+        
+    </style>
+    
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        
+    </div>
+    
+    <div metal:fill-slot="content">
+        <div class="error">
+            This is still a work in progress. As with Wordy I am writing this my free time. If you have any suggestions then please let me know.
+        </div>
+        
+        <h3>${category['name']}: ${sub_category['name']}</h3>
+        <div tal:repeat="a achievement_list">
+            ${a}
+        </div>
+        
+        
+        
+        <br /><br />
+        <a href="${request.route_url('achievements_category', user_id=request.user.id, category=request.matchdict['category'])}" class="button">${category['name']} achievements section</a>
+        <a href="${request.route_url('achievements_dashboard')}" class="button">Achievements home</a>
+    </div>
+</div>

@@ -5,6 +5,7 @@
             border: 0px solid #AAA;
             text-align:center;
             padding: 0px 0 10px;
+            margin-bottom: 20px;
         }
         
         .showcase_icon
@@ -13,16 +14,15 @@
             width: 150px;
             height: 150px;
             border: 0px solid #CCC;
-            margin: 0 15px;
+            margin: 0 20px;
         }
         
         .recents
         {
             float: right;
             width: 150px;
-            border: 1px solid #AAA;
+            border: 0px solid #AAA;
             text-align:center;
-            padding: 10px 0 10px;
         }
         
         .recent_wrapper
@@ -44,6 +44,12 @@
             border: 0px solid #CCC;
             margin-bottom: 5px;
         }
+        
+        .sections
+        {
+            border: 0px solid #AAA;
+            margin-right: 150px;
+        }
     </style>
     
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
@@ -55,6 +61,16 @@
             This is still a work in progress. As with Wordy I am writing this my free time. If you have any suggestions then please let me know.
         </div>
         
+        <!-- Showcase for drag and drop -->
+        <div class="showcase">
+            <h3>Showcase</h3>
+            
+            <div class="showcase_icon" tal:repeat="s showcase">
+                <img src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(achievement_types[s].lookup))}" width="150" height="150"/>
+            </div>
+        </div>
+        
+        <!-- Recents achievements -->
         <div class="recents">
             <h3>Recent achievements</h3>
             <div class="recent_wrapper" tal:repeat="a recents">
@@ -66,27 +82,12 @@
             </div>
         </div>
         
-        <div class="showcase">
-            <h3>Showcase</h3>
-            
-            <div class="showcase_icon" tal:repeat="s showcase">
-                <img src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(achievement_types[s].lookup))}" width="150" height="150"/>
-            </div>
-        </div>
-        
-        
-        <div style="float:right; width:40%;">
-            <h4>Incomplete</h4>
-            <div style="" tal:repeat="a pending">
-                ${achievement_types[a.item].name}
-            </div>
-        </div>
-        
-        <div style="float:left; width:40%;">
-            <h4>Completed</h4>
-            <div style="" tal:repeat="a completed">
-                ${achievement_types[a.item].name}
-            </div>
+        <!-- Main content block -->
+        <div class="sections">
+            <h3>Sections<h3>
+            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements_category', user_id=request.user.id, category=s)}" style="width: 400px; height 40px;">
+                ${sections[s]['name']}
+            </a>
         </div>
         
         <div style="clear:both;">

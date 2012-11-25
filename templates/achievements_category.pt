@@ -1,0 +1,21 @@
+<div metal:use-macro="layout">
+    <style type="text/css" media="screen" metal:fill-slot="css">
+        
+    </style>
+    
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        
+    </div>
+    
+    <div metal:fill-slot="content">
+        <div class="error">
+            This is still a work in progress. As with Wordy I am writing this my free time. If you have any suggestions then please let me know.
+        </div>
+        
+        <h3>${category['name']} categories</h3>
+        <a href="${request.route_url('achievements_sub_category', user_id=request.matchdict['user_id'], category=request.matchdict['category'], sub_category=s)}" class="inbutton" tal:repeat="s sub_categories">${sub_categories[s]['name']}</a>
+        
+        <br /><br />
+        <a href="${request.route_url('achievements_dashboard')}" class="button">Achievements home</a>
+    </div>
+</div>

@@ -1,21 +1,13 @@
-import transaction
-
 from pyramid.view import (
     view_config,
 )
 
-from pyramid.httpexceptions import (
-    HTTPFound,
-)
-
 from pyramid.renderers import get_renderer
-from sqlalchemy import or_
 
 from . import achievement_functions
 
 from ...models import (
     DBSession,
-    User,
     AchievementType,
     Achievement,
     AchievementShowcase,
@@ -56,19 +48,45 @@ def achievement_dashboard(request):
         achievement_types = achievement_types,
         recents = recents,
         showcase = showcase,
-    )
-
-@view_config(route_name='user_achievements', renderer='templates/user_achievements.pt', permission='loggedin')
-def user_achievements(request):
-    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
-    
-    return dict(
-        title  = "Achievements",
-        layout = layout
+        sections = achievement_functions.sections,
     )
 
 @view_config(route_name='achievements_category', renderer='templates/achievements_category.pt', permission='loggedin')
 def achievements_category(request):
+    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
+    
+    category = request.matchdict['category']
+    
+    return dict(
+        title  = "Achievements",
+        layout = layout,
+        category = achievement_functions.sections[category],
+        sub_categories = achievement_functions.sections[category]['sub_categories'],
+    )
+
+@view_config(route_name='achievements_sub_category', renderer='templates/achievements_sub_category.pt', permission='loggedin')
+def achievements_sub_category(request):
+    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
+    
+    user_id = request.matchdict['user_id']
+    category = request.matchdict['category']
+    sub_category = request.matchdict['sub_category']
+    
+    achievement_list = []
+    achievement_types = []
+    
+    return dict(
+        title  = "Achievements",
+        layout = layout,
+        category = achievement_functions.sections[category],
+        sub_category = achievement_functions.sections[category]['sub_categories'][sub_category],
+        user_id = user_id,
+        achievement_list = achievement_list,
+        achievement_types = achievement_types,
+    )
+
+@view_config(route_name='user_achievements', renderer='templates/user_achievements.pt', permission='loggedin')
+def user_achievements(request):
     layout = get_renderer('../../templates/layouts/empty.pt').implementation()
     
     return dict(
