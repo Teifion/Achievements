@@ -1,6 +1,11 @@
 <div metal:use-macro="layout">
     <style type="text/css" media="screen" metal:fill-slot="css">
-        
+        .achievement_row
+        {
+            border: 1px solid #000;
+            padding: 12px;
+            margin: 5px;
+        }
     </style>
     
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
@@ -13,11 +18,45 @@
         </div>
         
         <h3>${category['name']}: ${sub_category['name']}</h3>
-        <div tal:repeat="a achievement_list">
-            ${a}
+        <div tal:repeat="a_name achievement_names" class="achievement_row">
+            <div tal:define="a_type achievement_types[a_name]">
+                
+                <!-- No achievement -->
+                <div tal:condition="a_type.id not in player_achievements">
+                    <script type="text/javascript">
+                        $(function() {$("#${a_name}").progressbar({max:100,value:0});});
+                    </script>
+                    
+                    ${a_type.name} - 0/${a_type.activation_count}
+                    <div id="${a_name}">
+                        &nbsp;
+                    </div>
+                </div>
+                
+                <!-- Partial -->
+                <div tal:condition="a_type.id in player_achievements and (player_achievements[a_type.id].activation_count < a_type.activation_count)">
+                    <script type="text/javascript">
+                        $(function() {$("#${a_name}").progressbar({max:${a_type.activation_count},value:${player_achievements[a_type.id].activation_count}});});
+                    </script>
+                    
+                    ${a_type.name} - ${player_achievements[a_type.id].activation_count}/${a_type.activation_count}
+                    <div id="${a_name}">
+                        &nbsp;
+                    </div>
+                </div>
+                
+                <div tal:condition="a_type.id in player_achievements and (player_achievements[a_type.id].activation_count >= a_type.activation_count)">
+                    <script type="text/javascript">
+                        $(function() {$("#${a_name}").progressbar({max:100,value:100});});
+                    </script>
+                    
+                    ${a_type.name} - <strong>Completed</strong>
+                    <div id="${a_name}">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        
         
         <br /><br />
         <a href="${request.route_url('achievements_category', user_id=request.user.id, category=request.matchdict['category'])}" class="button">${category['name']} achievements section</a>

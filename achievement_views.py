@@ -68,12 +68,20 @@ def achievements_category(request):
 def achievements_sub_category(request):
     layout = get_renderer('../../templates/layouts/empty.pt').implementation()
     
-    user_id = request.matchdict['user_id']
-    category = request.matchdict['category']
+    user_id      = request.matchdict['user_id']
+    category     = request.matchdict['category']
     sub_category = request.matchdict['sub_category']
     
-    achievement_list = []
-    achievement_types = []
+    achievement_names = achievement_functions.sections[category]['sub_categories'][sub_category]['achievements']
+    
+    achievement_types = {}
+    for a in DBSession.query(AchievementType).filter(
+        AchievementType.lookup.in_(achievement_names)).limit(len(achievement_names)):
+        achievement_types[a.lookup] = a
+    
+    player_achievements = {}
+    for a in DBSession.query(Achievement).filter(Achievement.item.in_([v.id for k, v in achievement_types.items()])):
+        player_achievements[a.item] = a
     
     return dict(
         title  = "Achievements",
@@ -81,8 +89,9 @@ def achievements_sub_category(request):
         category = achievement_functions.sections[category],
         sub_category = achievement_functions.sections[category]['sub_categories'][sub_category],
         user_id = user_id,
-        achievement_list = achievement_list,
+        player_achievements = player_achievements,
         achievement_types = achievement_types,
+        achievement_names = achievement_names,
     )
 
 @view_config(route_name='user_achievements', renderer='templates/user_achievements.pt', permission='loggedin')
