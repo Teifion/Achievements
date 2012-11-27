@@ -2,6 +2,7 @@ from pyramid.view import (
     view_config,
 )
 
+from sqlalchemy.orm import outerjoin
 from pyramid.renderers import get_renderer
 
 from . import achievement_functions
@@ -72,16 +73,35 @@ def achievements_sub_category(request):
     category     = request.matchdict['category']
     sub_category = request.matchdict['sub_category']
     
+    # I wanted to use something like this but I couldn't get the outer-join to work correctly :(
+    # achievement_list = DBSession.query(AchievementType, Achievement).outerjoin(
+    #     Achievement, Achievement.item == AchievementType.id
+    # ).filter(
+    #     AchievementType.lookup.in_(achievement_names),
+    #     Achievement.user == request.user.id,
+    # )
+    
     achievement_names = achievement_functions.sections[category]['sub_categories'][sub_category]['achievements']
     
     achievement_types = {}
-    for a in DBSession.query(AchievementType).filter(
-        AchievementType.lookup.in_(achievement_names)).limit(len(achievement_names)):
-        achievement_types[a.lookup] = a
+    lookup = {}
+    for a in DBSession.query(AchievementType).filter(AchievementType.lookup.in_(achievement_names)):
+        achievement_types[a.id] = a
+        lookup[a.lookup] = a.id
     
     player_achievements = {}
-    for a in DBSession.query(Achievement).filter(Achievement.item.in_([v.id for k, v in achievement_types.items()])):
+    for a in DBSession.query(Achievement).filter(Achievement.item.in_(achievement_types)):
         player_achievements[a.item] = a
+    
+    complete, partial, not_started = [], [], []
+    for a in [lookup[a] for a in achievement_names]:
+        if a in player_achievements:
+            if player_achievements[a].activation_count >= achievement_types[a].activation_count:
+                complete.append(a)
+            else:
+                partial.append(a)
+        else:
+            not_started.append(a)
     
     return dict(
         title  = "Achievements",
@@ -89,9 +109,9 @@ def achievements_sub_category(request):
         category = achievement_functions.sections[category],
         sub_category = achievement_functions.sections[category]['sub_categories'][sub_category],
         user_id = user_id,
-        player_achievements = player_achievements,
+        achievement_list = complete + partial + not_started,
         achievement_types = achievement_types,
-        achievement_names = achievement_names,
+        player_achievements = player_achievements,
     )
 
 @view_config(route_name='user_achievements', renderer='templates/user_achievements.pt', permission='loggedin')

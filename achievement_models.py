@@ -12,6 +12,8 @@ from sqlalchemy.dialects.postgresql import (
     ARRAY,
 )
 
+from sqlalchemy.orm import relationship
+
 # You will need to point this to wherever your declarative base is
 from ...models import Base
 
@@ -32,6 +34,8 @@ class AchievementType(Base):
     
     # Some achievements expire after a certain amount of time
     duration = Column(Interval, nullable=True)
+    
+    achievements = relationship("Achievement")
     
     def __init__(self, lookup, name, description, points=0, activation_count=1, duration=None, section="", sub_section=""):
         self.lookup           = lookup

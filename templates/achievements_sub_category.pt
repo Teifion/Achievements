@@ -2,9 +2,17 @@
     <style type="text/css" media="screen" metal:fill-slot="css">
         .achievement_row
         {
-            border: 1px solid #000;
+            border-bottom: 1px dotted #AAA;
             padding: 12px;
             margin: 5px;
+            clear: both;
+            min-height: 75px;
+        }
+        
+        .achievement_thumb
+        {
+            float: left;
+            margin-right: 10px;
         }
     </style>
     
@@ -18,17 +26,19 @@
         </div>
         
         <h3>${category['name']}: ${sub_category['name']}</h3>
-        <div tal:repeat="a_name achievement_names" class="achievement_row">
-            <div tal:define="a_type achievement_types[a_name]">
+       <div tal:repeat="a achievement_list" class="achievement_row">
+            <div tal:define="a_type achievement_types[a]; a_item player_achievements.get(a, None)">
                 
                 <!-- No achievement -->
-                <div tal:condition="a_type.id not in player_achievements">
+                <div tal:condition="a_item == None">
                     <script type="text/javascript">
-                        $(function() {$("#${a_name}").progressbar({max:100,value:0});});
+                        $(function() {$("#${a_type.lookup}").progressbar({max:100,value:0});});
                     </script>
                     
-                    ${a_type.name} - 0/${a_type.activation_count}
-                    <div id="${a_name}">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a_type.lookup))}" width="75" height="75" class="achievement_thumb" />
+                    <strong>${a_type.name} - 0/${a_type.activation_count}</strong><br />
+                    ${a_type.description}
+                    <div id="${a_type.lookup}" style="margin-left:85px;">
                         &nbsp;
                     </div>
                 </div>
@@ -36,22 +46,26 @@
                 <!-- Partial -->
                 <div tal:condition="a_type.id in player_achievements and (player_achievements[a_type.id].activation_count < a_type.activation_count)">
                     <script type="text/javascript">
-                        $(function() {$("#${a_name}").progressbar({max:${a_type.activation_count},value:${player_achievements[a_type.id].activation_count}});});
+                        $(function() {$("#${a_type.lookup}").progressbar({max:${a_type.activation_count},value:${player_achievements[a_type.id].activation_count}});});
                     </script>
                     
-                    ${a_type.name} - ${player_achievements[a_type.id].activation_count}/${a_type.activation_count}
-                    <div id="${a_name}">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a_type.lookup))}" width="75" height="75" class="achievement_thumb" />
+                    <strong>${a_type.name} - ${player_achievements[a_type.id].activation_count}/${a_type.activation_count}</strong><br />
+                    ${a_type.description}
+                    <div id="${a_type.lookup}" style="margin-left:85px;">
                         &nbsp;
                     </div>
                 </div>
                 
                 <div tal:condition="a_type.id in player_achievements and (player_achievements[a_type.id].activation_count >= a_type.activation_count)">
                     <script type="text/javascript">
-                        $(function() {$("#${a_name}").progressbar({max:100,value:100});});
+                        $(function() {$("#${a_type.lookup}").progressbar({max:100,value:100});});
                     </script>
                     
-                    ${a_type.name} - <strong>Completed</strong>
-                    <div id="${a_name}">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a_type.lookup))}" width="75" height="75" class="achievement_thumb" />
+                    <strong>${a_type.name} - Completed</strong><br />
+                    ${a_type.description}
+                    <div id="${a_type.lookup}" style="margin-left:85px;">
                         &nbsp;
                     </div>
                 </div>
