@@ -16,6 +16,6 @@
         <a href="${request.route_url('achievements_sub_category', user_id=request.matchdict['user_id'], category=request.matchdict['category'], sub_category=s)}" class="inbutton" tal:repeat="s sub_categories">${sub_categories[s]['name']}</a>
         
         <br /><br />
-        <a href="${request.route_url('achievements_dashboard')}" class="button">Achievements home</a>
+        <a href="${request.route_url('user_achievements', user_id=user_id)}" class="button">Achievements home</a>
     </div>
 </div>

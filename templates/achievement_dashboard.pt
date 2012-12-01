@@ -20,7 +20,7 @@
         .recents
         {
             float: right;
-            width: 150px;
+            width: 175px;
             border: 0px solid #AAA;
             text-align:center;
         }
@@ -29,7 +29,8 @@
         {
             display: inline-block;
             border: 0px solid #AAA;
-            margin: 15px 15px;
+            margin: 15px 5px;
+            text-align: center;
         }
         
         .recent_wrapper strong
@@ -43,6 +44,7 @@
             height: 75px;
             border: 0px solid #CCC;
             margin-bottom: 5px;
+            margin: 0 auto;
         }
         
         .sections
@@ -77,7 +79,7 @@
                 <div class="recent_icon">
                     <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(achievement_types[a.item].lookup))}" width="75" height="75"/>
                 </div>
-                <strong>${achievement_types[a.item].name}</strong><br />
+                <strong>${achievement_types[a.item].name} (${achievement_types[a.item].points})</strong><br />
                 ${a.first_awarded.strftime("%d/%m/%Y")}
             </div>
         </div>
@@ -85,7 +87,7 @@
         <!-- Main content block -->
         <div class="sections">
             <h3>Sections<h3>
-            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements_category', user_id=request.user.id, category=s)}" style="width: 400px; height 40px;">
+            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements_category', user_id=user_id, category=s)}" style="width: 400px; height 40px;">
                 ${sections[s]['name']}
             </a>
         </div>

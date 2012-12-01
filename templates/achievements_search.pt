@@ -1,0 +1,36 @@
+<div metal:use-macro="layout">
+    <style type="text/css" media="screen" metal:fill-slot="css">
+        input[type="text"]
+        {
+            width: 100%;
+            font-size: 20px;
+            height: 30px !important;
+            text-align:center;
+        }
+    </style>
+    
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        
+    </div>
+    
+    <div metal:fill-slot="content">
+        <script type="text/javascript" charset="utf-8">
+            $(function() {
+                $('#player_name').focus();
+            });
+        </script>
+        
+        <div class="error" tal:condition="message != ''">
+            ${message}
+        </div>
+        
+        <form action="${request.route_url('achievements_search')}" method="post" accept-charset="utf-8">
+            <table border="0" cellspacing="0" cellpadding="5" style="width:800px; margin: 0 auto;">
+                <tr>
+                    <td style="padding:9px;"><input type="text" name="player_name" id="player_name" value="${request.params.get('player_name', '')}" style="" /></td>
+                    <td style="padding:0px;"><input type="submit" value="Search" class="inbutton" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
