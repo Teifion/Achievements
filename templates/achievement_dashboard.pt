@@ -5,7 +5,7 @@
             border: 0px solid #AAA;
             text-align:center;
             padding: 0px 0 10px;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
         }
         
         .showcase_icon
@@ -15,6 +15,14 @@
             height: 150px;
             border: 0px solid #CCC;
             margin: 0 20px;
+        }
+        
+        .unselected_icon
+        {
+            background-color: #FFF;
+            color: #AAA;
+            font-size: 22px;
+            line-height: 32px;
         }
         
         .recents
@@ -52,6 +60,31 @@
             border: 0px solid #AAA;
             margin-right: 150px;
         }
+        
+        .edit_showcase_icon
+        {
+            width: 25px;
+            height: 25px;
+            
+            margin: -10px -15px -15px -10px;
+            
+            float:left;
+        }
+        
+        .popup_row
+        {
+            border-bottom: 1px solid #AAA;
+            padding: 15px 10px;
+            margin: 0 -5px;
+        }
+        
+        .popup_row img
+        {
+            float: left;
+            margin-top: -10px;
+            margin-left: -10px;
+            margin-right: 10px;
+        }
     </style>
     
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
@@ -70,6 +103,21 @@
             <div class="showcase_icon" tal:repeat="s showcase">
                 <img src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(achievement_types[s].lookup))}" width="150" height="150"/>
             </div>
+            
+            <div class="showcase_icon unselected_icon" tal:repeat="i range(len(showcase), 5)">
+                <div class="edit_showcase_icon" tal:condition="user_id == request.user.id">
+                    <div onclick="$('#showcase_editor').html('Loading...').load('${request.route_url('achievements_showcase_popup')}').dialog({title:'Select trophy',position:[($(window).width() / 2) - (600 / 2), 150],modal:true,minWidth:600,buttons:{Cancel: function() {$(this).dialog('close');}}});" class="ui-state-default ui-corner-all icon_button" title="Edit trophy">
+                        <span class="ui-icon ui-icon-wrench"></span>
+                    </div>
+                </div>
+                
+                <br />
+                No trophy displayed
+            </div>
+        </div>
+        
+        <div id="showcase_editor" style="display:none;">
+            SRDSRD
         </div>
         
         <!-- Recents achievements -->
