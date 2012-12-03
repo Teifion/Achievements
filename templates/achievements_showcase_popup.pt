@@ -1,4 +1,4 @@
-<div tal:repeat="a achievement_list" class="popup_row">
+<div tal:repeat="a achievement_list" class="popup_achievement">
     <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(achievement_types[a].lookup))}" width="37" height="37"/>
     
     ${achievement_types[a].name}

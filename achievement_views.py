@@ -151,14 +151,16 @@ def achievements_sub_category(request):
 
 @view_config(route_name='achievements_showcase_popup', renderer='templates/achievements_showcase_popup.pt', permission='loggedin')
 def achievements_showcase_popup(request):
-    achievement_list = [1,2,3]
+    query = DBSession.query(Achievement.item).filter(Achievement.last_awarded != None, Achievement.user == request.user.id)
+    player_achievements = [a[0] for a in query]
     
     achievement_types = {}
-    for a in DBSession.query(AchievementType).filter(AchievementType.id.in_(achievement_list)):
+    for a in DBSession.query(AchievementType).filter(AchievementType.id.in_(player_achievements)):
         achievement_types[a.id] = a
     
     # Get a list of all achievements
     return dict(
-        achievement_list = achievement_list,
+        achievement_list = player_achievements,
         achievement_types = achievement_types,
+        sections = achievement_functions.sections,
     )

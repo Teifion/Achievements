@@ -71,14 +71,36 @@
             float:left;
         }
         
-        .popup_row
+        .popup_section
+        {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .popup_section_list
+        {
+            display:none;
+        }
+        
+        .popup_subsection
+        {
+            
+        }
+        
+        .popup_subsection_list
+        {
+            display:none;
+        }
+        
+        
+        .popup_achievement
         {
             border-bottom: 1px solid #AAA;
             padding: 15px 10px;
             margin: 0 -5px;
         }
         
-        .popup_row img
+        .popup_achievement img
         {
             float: left;
             margin-top: -10px;
@@ -88,7 +110,7 @@
     </style>
     
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
-        
+        <a href="${request.route_url('achievements_dashboard')}" tal:condition="user_id != request.user.id" class="inbutton">Achievements dashboard</a>
     </div>
     
     <div metal:fill-slot="content">
@@ -117,8 +139,11 @@
         </div>
         
         <div id="showcase_editor" style="display:none;">
-            SRDSRD
+            &nbsp;
         </div>
+        
+        <a href="${request.route_url('achievements_search')}" class="inbutton">Search achievements</a>
+        
         
         <!-- Recents achievements -->
         <div class="recents">
