@@ -2,7 +2,6 @@ from pyramid.view import (
     view_config,
 )
 
-from sqlalchemy.orm import outerjoin
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import get_renderer
 
@@ -30,13 +29,14 @@ def achievement_dashboard(request):
         
     # Showcase chosen by user
     showcase = DBSession.query(AchievementShowcase.items).filter(AchievementShowcase.user == user_id).first()
-    if showcase == None: showcase = []
-    else: showcase = showcase[0][0:5]
+    if showcase == None:
+        showcase = AchievementShowcase()
+        showcase.items = [0]*5
     
     completed = []
     pending = []
     recents = []
-    type_ids = set(showcase)
+    type_ids = set(showcase.items)
     for a in DBSession.query(Achievement).filter(Achievement.user == user_id).order_by(Achievement.first_awarded.desc()):
         if a.first_awarded == None:
             pending.append(a)
@@ -151,16 +151,30 @@ def achievements_sub_category(request):
 
 @view_config(route_name='achievements_showcase_popup', renderer='templates/achievements_showcase_popup.pt', permission='loggedin')
 def achievements_showcase_popup(request):
-    query = DBSession.query(Achievement.item).filter(Achievement.last_awarded != None, Achievement.user == request.user.id)
-    player_achievements = [a[0] for a in query]
-    
-    achievement_types = {}
-    for a in DBSession.query(AchievementType).filter(AchievementType.id.in_(player_achievements)):
-        achievement_types[a.id] = a
+    achievement_list = DBSession.query(AchievementType.id, AchievementType.name
+        ).filter(Achievement.last_awarded != None, Achievement.user == request.user.id, AchievementType.id == Achievement.item
+        ).order_by(AchievementType.name.asc())
     
     # Get a list of all achievements
     return dict(
-        achievement_list = player_achievements,
-        achievement_types = achievement_types,
-        sections = achievement_functions.sections,
+        achievement_list = list(achievement_list)
     )
+
+@view_config(route_name='achievements_edit_showcase', permission='loggedin')
+def achievements_edit_showcase(request):
+    showcase_number = int(request.params['showcase_number'])
+    achievement_id = int(request.params['achievement_id'])
+    
+    # Showcase chosen by user
+    showcase = DBSession.query(AchievementShowcase).filter(AchievementShowcase.user == request.user.id).first()
+    if showcase == None:
+        showcase = AchievementShowcase()
+        showcase.user = request.user.id
+        showcase.items = [0]*5
+    
+    showcase.items[showcase_number] = achievement_id
+    showcase.items = tuple(showcase.items)
+    DBSession.add(showcase)
+    
+    # Get a list of all achievements
+    return HTTPFound(location=request.route_url('achievements_dashboard'))

@@ -1,5 +1,7 @@
-<div tal:repeat="a achievement_list" class="popup_achievement">
-    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(achievement_types[a].lookup))}" width="37" height="37"/>
-    
-    ${achievement_types[a].name}
+<div tal:condition="achievement_list == []">
+    You have no achievements to showcase.
 </div>
+
+<select id="popup_achievement_id" tal:condition="achievement_list != []">
+    <option tal:repeat="a achievement_list" value="${a[0]}">${a[1]}</option>
+</select>
