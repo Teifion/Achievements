@@ -57,28 +57,26 @@
     </style>
     
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
-        <a href="${request.route_url('achievements_dashboard')}" tal:condition="user_id != request.user.id" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.dashboard')}" tal:condition="user_id != request.user.id" class="inbutton">Achievements dashboard</a>
     </div>
     
     <div metal:fill-slot="content">
         <script type="text/javascript" charset="utf-8">
             function show_popup (showcase_number)
             {
-                $('#showcase_editor').html('Loading...').load('${request.route_url('achievements_showcase_popup')}').dialog(
+                $('#showcase_editor').html('Loading...').load('${request.route_url('achievements.showcase_popup')}').dialog(
                     {
                         title:'Select trophy',
                         position:[($(window).width() / 2) - (600 / 2), 150],
                         modal:true,
                         minWidth:600,
                         buttons:{
-                            Cancel: function() {$(this).dialog('close');},
-                            Save: function() {window.location = "${request.route_url('achievements_edit_showcase')}?showcase_number=" + showcase_number + "&achievement_id=" + $('#popup_achievement_id option:selected').val();},
+                            Cancel: function() {$(this).dialog('close');}
                         }
                     }
                 );
             }
         </script>
-        
         
         <!-- Showcase for drag and drop -->
         <div class="showcase">
@@ -99,7 +97,7 @@
             &nbsp;
         </div>
         
-        <a href="${request.route_url('achievements_search')}" class="inbutton">Search achievements</a>
+        <a href="${request.route_url('achievements.search')}" class="inbutton">Search achievements</a>
         
         
         <!-- Recents achievements -->
@@ -121,7 +119,7 @@
         <!-- Main content block -->
         <div class="sections">
             <h3>Sections<h3>
-            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements_category', user_id=user_id, category=s)}" style="width: 400px; height 40px;">
+            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements.category', user_id=user_id, category=s)}" style="width: 400px; height 40px;">
                 ${sections[s]['name']}
             </a>
         </div>

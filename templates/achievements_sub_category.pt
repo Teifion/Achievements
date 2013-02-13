@@ -69,7 +69,7 @@
         </div>
         
         <br /><br />
-        <a href="${request.route_url('achievements_category', user_id=user_id, category=request.matchdict['category'])}" class="button">${category['name']} achievements section</a>
-        <a href="${request.route_url('user_achievements', user_id=user_id)}" class="button">Achievements home</a>
+        <a href="${request.route_url('achievements.category', user_id=user_id, category=request.matchdict['category'])}" class="button">${category['name']} achievements section</a>
+        <a href="${request.route_url('achievements.user', user_id=user_id)}" class="button">Achievements home</a>
     </div>
 </div>

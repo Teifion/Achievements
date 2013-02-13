@@ -59,6 +59,7 @@ class Achievement(Base):
     activation_count = Column(Integer, nullable=False, default=0)
 
 class AchievementShowcase(Base):
+    """A list of the achievements a player is showing in their showcase."""
     __tablename__ = 'achievement_showcase'
     id            = Column(Integer, primary_key=True)
     user          = Column(Integer, ForeignKey("users.id"), nullable=False)

@@ -4,4 +4,6 @@
 
 <select id="popup_achievement_id" tal:condition="achievement_list != []">
     <option tal:repeat="a achievement_list" value="${a[0]}">${a[1]}</option>
+    
+    <a href="${request.route_url('achievements.edit_showcase')}?showcase_number=" + showcase_number + "&achievement_id=" + $('#popup_achievement_id option:selected').val();},
 </select>

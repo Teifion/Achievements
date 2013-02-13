@@ -24,7 +24,7 @@
             ${message}
         </div>
         
-        <form action="${request.route_url('achievements_search')}" method="post" accept-charset="utf-8">
+        <form action="${request.route_url('achievements.search')}" method="post" accept-charset="utf-8">
             <table border="0" cellspacing="0" cellpadding="5" style="width:800px; margin: 0 auto;">
                 <tr>
                     <td style="padding:9px;"><input type="text" name="player_name" id="player_name" value="${request.params.get('player_name', '')}" style="" /></td>

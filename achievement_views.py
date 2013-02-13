@@ -15,10 +15,10 @@ from ...models import (
     AchievementShowcase,
 )
 
-@view_config(route_name='achievements_dashboard', renderer='templates/achievement_dashboard.pt', permission='loggedin')
-@view_config(route_name='user_achievements', renderer='templates/achievement_dashboard.pt', permission='loggedin')
+@view_config(route_name='achievements.dashboard', renderer='templates/achievement_dashboard.pt', permission='loggedin')
+@view_config(route_name='achievements.user', renderer='templates/achievement_dashboard.pt', permission='loggedin')
 def achievement_dashboard(request):
-    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
+    layout = get_renderer('../../templates/layouts/viewer.pt').implementation()
     
     if 'user_id' in request.matchdict:
         user_id = int(request.matchdict['user_id'])
@@ -64,9 +64,9 @@ def achievement_dashboard(request):
         player_name = player_name,
     )
 
-@view_config(route_name='achievements_search', renderer='templates/achievements_search.pt', permission='loggedin')
+@view_config(route_name='achievements.search', renderer='templates/achievements_search.pt', permission='loggedin')
 def achievements_search(request):
-    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
+    layout = get_renderer('../../templates/layouts/viewer.pt').implementation()
     message = ""
     
     if "player_name" in request.params:
@@ -77,7 +77,7 @@ def achievements_search(request):
         else:
             player_id = player_id[0]
             
-            return HTTPFound(location=request.route_url('user_achievements', user_id=player_id))
+            return HTTPFound(location=request.route_url('achievements.user', user_id=player_id))
     
     return dict(
         title  = "Achievements: Player search",
@@ -85,9 +85,9 @@ def achievements_search(request):
         message = message,
     )
 
-@view_config(route_name='achievements_category', renderer='templates/achievements_category.pt', permission='loggedin')
+@view_config(route_name='achievements.category', renderer='templates/achievements_category.pt', permission='loggedin')
 def achievements_category(request):
-    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
+    layout = get_renderer('../../templates/layouts/viewer.pt').implementation()
     
     user_id      = int(request.matchdict['user_id'])
     category = request.matchdict['category']
@@ -100,9 +100,9 @@ def achievements_category(request):
         sub_categories = achievement_functions.sections[category]['sub_categories'],
     )
 
-@view_config(route_name='achievements_sub_category', renderer='templates/achievements_sub_category.pt', permission='loggedin')
+@view_config(route_name='achievements.sub_category', renderer='templates/achievements_sub_category.pt', permission='loggedin')
 def achievements_sub_category(request):
-    layout = get_renderer('../../templates/layouts/empty.pt').implementation()
+    layout = get_renderer('../../templates/layouts/viewer.pt').implementation()
     
     user_id      = int(request.matchdict['user_id'])
     category     = request.matchdict['category']
@@ -149,7 +149,7 @@ def achievements_sub_category(request):
         player_achievements = player_achievements,
     )
 
-@view_config(route_name='achievements_showcase_popup', renderer='templates/achievements_showcase_popup.pt', permission='loggedin')
+@view_config(route_name='achievements.showcase_popup', renderer='templates/achievements_showcase_popup.pt', permission='loggedin')
 def achievements_showcase_popup(request):
     achievement_list = DBSession.query(AchievementType.id, AchievementType.name
         ).filter(Achievement.last_awarded != None, Achievement.user == request.user.id, AchievementType.id == Achievement.item
@@ -160,7 +160,7 @@ def achievements_showcase_popup(request):
         achievement_list = list(achievement_list)
     )
 
-@view_config(route_name='achievements_edit_showcase', permission='loggedin')
+@view_config(route_name='achievements.edit_showcase', permission='loggedin')
 def achievements_edit_showcase(request):
     showcase_number = int(request.params['showcase_number'])
     achievement_id = int(request.params['achievement_id'])
@@ -177,4 +177,4 @@ def achievements_edit_showcase(request):
     DBSession.add(showcase)
     
     # Get a list of all achievements
-    return HTTPFound(location=request.route_url('achievements_dashboard'))
+    return HTTPFound(location=request.route_url('achievements.dashboard'))
