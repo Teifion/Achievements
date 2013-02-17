@@ -1,6 +1,7 @@
 from sqlalchemy import (
     Column,
     DateTime,
+    Boolean,
     Integer,
     Interval,
     Text,
@@ -15,13 +16,23 @@ from sqlalchemy.dialects.postgresql import (
 from sqlalchemy.orm import relationship
 
 # You will need to point this to wherever your declarative base is
-from ...models import Base
+# I'm not yet sure how to remove this requirement
+from ..models import Base
+
+class AchievementCategory(Base):
+    __tablename__ = 'achievement_categories'
+    id      = Column(Integer, primary_key=True)
+    name    = Column(String, nullable=False, index=True)
+    private = Column(Boolean, default=False)
+    
+    # Set to -1 if has no parent
+    parent  = Column(Integer, nullable=False, index=True)
 
 class AchievementType(Base):
     __tablename__ = 'achievement_types'
     id            = Column(Integer, primary_key=True)
     
-    # The name used to look it up
+    # The name used to look it up, this allows us to have multiple achievements with the same name
     lookup        = Column(String, nullable=False, unique=True, index=True)
     
     # The name displayed to users
@@ -34,6 +45,9 @@ class AchievementType(Base):
     
     # Some achievements expire after a certain amount of time
     duration = Column(Interval, nullable=True)
+    
+    # Can't be found by searching, only show if they have the achievement
+    private = Column(Boolean, default=False)
     
     achievements = relationship("Achievement")
     

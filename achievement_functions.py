@@ -1,7 +1,3 @@
-from ...models import (
-    DBSession,
-)
-
 import datetime
 from .achievement_models import AchievementType, Achievement
 import transaction
