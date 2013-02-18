@@ -2,6 +2,7 @@ import datetime
 from .achievement_models import AchievementType, Achievement
 import transaction
 from collections import OrderedDict
+from .config import config
 
 """
 Sections is used to decide how to list/group the achievements on the dashboard page.
@@ -18,21 +19,21 @@ def register(achievement_list):
     # Who are we missing?
     names = [a.lookup for a in achievement_list]
     found = []
-    for n in DBSession.query(AchievementType.lookup).filter(AchievementType.lookup.in_(names)):
+    for n in config['DBSession'].query(AchievementType.lookup).filter(AchievementType.lookup.in_(names)):
         found.append(n[0])
     
     with transaction.manager:
         for a in achievement_list:
             if a.lookup not in found:
-                DBSession.add(a)
+                config['DBSession'].add(a)
 
 def give_achievement(achievement_lookup, user_id, acount=1):
-    the_item = DBSession.query(AchievementType).filter(AchievementType.lookup == achievement_lookup).limit(1).first()
+    the_item = config['DBSession'].query(AchievementType).filter(AchievementType.lookup == achievement_lookup).limit(1).first()
     
     if the_item == None:
         raise KeyError("No item by lookup of '{}'".format(achievement_lookup))
     
-    the_achievement = DBSession.query(Achievement).filter(
+    the_achievement = config['DBSession'].query(Achievement).filter(
         Achievement.item == the_item.id, Achievement.user == user_id).limit(1).first()
     
     if the_achievement == None:
@@ -69,4 +70,4 @@ def give_achievement(achievement_lookup, user_id, acount=1):
         if the_item.duration != None:
             the_achievement.expires = the_achievement.last_awarded + the_item.duration
     
-    DBSession.add(the_achievement)
+    config['DBSession'].add(the_achievement)

@@ -48,16 +48,15 @@ def register_category_tree(categories, parent=-1):
     
     """
     
-    results = []
-    
     last_item = parent
     for c in categories:
         if type(c) == str:
-            last_item = register_category(c, parent)
+            if c[0] == "_":
+                last_item = register_category(c[1:], parent, private=True)
+            else:
+                last_item = register_category(c, parent)
         else:
-            results.extend(register_category_tree(c, last_item))
-    
-    return results
+            register_category_tree(c, last_item)
 
 def register_type():
     pass
