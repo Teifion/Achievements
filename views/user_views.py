@@ -14,8 +14,8 @@ from ..achievement_models import (
     AchievementShowcase,
 )
 
-@view_config(route_name='achievements.dashboard', renderer='../templates/achievement_dashboard.pt', permission='loggedin')
-@view_config(route_name='achievements.user', renderer='../templates/achievement_dashboard.pt', permission='loggedin')
+@view_config(route_name='achievements.dashboard', renderer='../templates/dashboard.pt', permission='achievements')
+@view_config(route_name='achievements.user', renderer='../templates/dashboard.pt', permission='achievements')
 def achievement_dashboard(request):
     layout = get_renderer(config['layout']).implementation()
     
@@ -63,7 +63,7 @@ def achievement_dashboard(request):
         player_name = player_name,
     )
 
-@view_config(route_name='achievements.search', renderer='../templates/achievements_search.pt', permission='loggedin')
+@view_config(route_name='achievements.search', renderer='../templates/search.pt', permission='achievements')
 def achievements_search(request):
     layout = get_renderer(config['layout']).implementation()
     message = ""
@@ -84,7 +84,7 @@ def achievements_search(request):
         message = message,
     )
 
-@view_config(route_name='achievements.category', renderer='../templates/achievements_category.pt', permission='loggedin')
+@view_config(route_name='achievements.category', renderer='../templates/category.pt', permission='achievements')
 def achievements_category(request):
     layout = get_renderer(config['layout']).implementation()
     
@@ -99,7 +99,7 @@ def achievements_category(request):
         sub_categories = achievement_functions.sections[category]['sub_categories'],
     )
 
-@view_config(route_name='achievements.sub_category', renderer='../templates/achievements_sub_category.pt', permission='loggedin')
+@view_config(route_name='achievements.sub_category', renderer='../templates/sub_category.pt', permission='achievements')
 def achievements_sub_category(request):
     layout = get_renderer(config['layout']).implementation()
     
@@ -148,7 +148,7 @@ def achievements_sub_category(request):
         player_achievements = player_achievements,
     )
 
-@view_config(route_name='achievements.showcase_popup', renderer='../templates/achievements_showcase_popup.pt', permission='loggedin')
+@view_config(route_name='achievements.showcase_popup', renderer='../templates/showcase_popup.pt', permission='achievements')
 def achievements_showcase_popup(request):
     achievement_list = config['DBSession'].query(AchievementType.id, AchievementType.name
         ).filter(Achievement.last_awarded != None, Achievement.user == request.user.id, AchievementType.id == Achievement.item
@@ -159,7 +159,7 @@ def achievements_showcase_popup(request):
         achievement_list = list(achievement_list)
     )
 
-@view_config(route_name='achievements.edit_showcase', permission='loggedin')
+@view_config(route_name='achievements.edit_showcase', permission='achievements')
 def achievements_edit_showcase(request):
     showcase_number = int(request.params['showcase_number'])
     achievement_id = int(request.params['achievement_id'])

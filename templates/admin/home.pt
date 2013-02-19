@@ -1,0 +1,10 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" tal:condition="user_id != request.user.id" class="inbutton">Achievements dashboard</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        <a href="${request.route_url('achievements.admin.add_section')}" class="inbutton">Add section</a>
+        <a href="${request.route_url('achievements.admin.add_category')}" class="inbutton">Add achievement</a>
+    </div>
+</div>
