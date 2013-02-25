@@ -1,0 +1,26 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        <a href="${request.route_url('achievements.dev.section.add')}" class="inbutton">Add section</a>
+        <a href="${request.route_url('achievements.admin.category.add')}" class="inbutton">Add category</a>
+        <a href="${request.route_url('achievements.admin.subcategory.add')}" class="inbutton">Add sub category</a>
+        <a href="${request.route_url('achievements.admin.achievement.add')}" class="inbutton">Add achievement</a>
+        <br /><br />
+        
+        <div tal:condition="sections == []">
+            There are currently no achievement sections. You will need to add a new one through the <a href="${request.route_url('achievements.dev.section.add')}">Add section</a> page.
+        </div>
+        
+        <table border="0" cellspacing="0" cellpadding="5" tal:condition="sections != []">
+            <tr tal:repeat="s sections">
+                <td style="min-width:200px;">${s.name}</td>
+                <td class="button_cell"><a href="${request.route_url('achievements.dev.section.edit', section_id=s.id)}" class="inbutton">Edit</a></td>
+                <td class="button_cell"><a href="${request.route_url('achievements.dev.section.delete', section_id=s.id)}" class="inbutton red_button">X</a></td>
+            </tr>
+        </table>
+        
+    </div>
+</div>

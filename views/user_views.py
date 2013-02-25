@@ -14,8 +14,8 @@ from ..achievement_models import (
     AchievementShowcase,
 )
 
-@view_config(route_name='achievements.dashboard', renderer='../templates/dashboard.pt', permission='achievements')
-@view_config(route_name='achievements.user', renderer='../templates/dashboard.pt', permission='achievements')
+@view_config(route_name='achievements.dashboard', renderer='../templates/home.pt', permission='achievements')
+@view_config(route_name='achievements.user', renderer='../templates/home.pt', permission='achievements')
 def achievement_dashboard(request):
     layout = get_renderer(config['layout']).implementation()
     

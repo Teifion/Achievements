@@ -13,11 +13,23 @@ from sqlalchemy.dialects.postgresql import (
     ARRAY,
 )
 
+from .config import config
 from sqlalchemy.orm import relationship
 
 # You will need to point this to wherever your declarative base is
 # I'm not yet sure how to remove this requirement
 from ..models import Base
+
+class AchievementSection(Base):
+    __tablename__ = 'achievement_sections'
+    id      = Column(Integer, primary_key=True)
+    name    = Column(String, nullable=False, index=True)
+    private = Column(Boolean, default=False)
+    
+    owner   = Column(Integer, ForeignKey("users.id"), nullable=False)
+    
+    # A list of people that can edit this section
+    editors = Column(ARRAY(Integer), nullable=False, default=[])
 
 class AchievementCategory(Base):
     __tablename__ = 'achievement_categories'
@@ -26,7 +38,17 @@ class AchievementCategory(Base):
     private = Column(Boolean, default=False)
     
     # Set to -1 if has no parent
-    parent  = Column(Integer, nullable=False, index=True)
+    section  = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False, index=True)
+
+class AchievementSubCategory(Base):
+    __tablename__ = 'achievement_subcategories'
+    id      = Column(Integer, primary_key=True)
+    name    = Column(String, nullable=False, index=True)
+    private = Column(Boolean, default=False)
+    
+    # Set to -1 if has no parent
+    section  = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
+    category  = Column(Integer, ForeignKey("achievement_categories.id"), nullable=False, index=True)
 
 class AchievementType(Base):
     __tablename__ = 'achievement_types'

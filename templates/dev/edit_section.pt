@@ -1,0 +1,65 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.dev')}" class="inbutton">Dev</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        
+        <form tal:condition="the_section != None" action="${request.route_url('achievements.dev.section.edit', section_id=the_section.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
+            <div tal:condition="message != ''" id="flash_update" style="border: 1px solid #AAA; margin:10px; padding:10px; text-align:center;">
+                ${message}
+                
+                <script type="text/javascript" charset="utf-8">
+                    $(document).ready(function() {
+                        $('#flash_update').show();
+                        $('#flash_update').animate({ backgroundColor: "#${flash_colour}" }, 500);
+                        $('#flash_update').animate({ backgroundColor: "#FFF" }, 1500);
+                    });
+                </script>
+            </div>
+            
+            <script type="text/javascript" charset="utf-8">    
+                $(document).ready(function() {
+                    $('#name').focus();
+                });
+            </script>
+            
+            <input type="hidden" name="section_id" id="section_id" value="${the_section.id}" />
+            
+            Owner: ${user_names[the_section.owner]}
+            <br /><br />
+            <table border="0" cellspacing="0" cellpadding="5" style="width:100%;">
+                <tr>
+                    <td><label for="name">Section name:</label></td>
+                    <td><input type="text" name="name" id="name" value="${the_section.name}" size="30"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="editors">Editors:</label></td>
+                    <td><input type="text" name="editors" id="editors" value="${' '.join([user_names[e] for e in the_section.editors])}" style="width:100%;min-width:200px;"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="private">Private:</label></td>
+                    <td style="">
+                        <input type="checkbox" id="private" name="private" tal:attributes="checked the_section.private"/>
+                    </td>
+                </tr>
+            </table>
+            <table border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
+                    <td tal:condition="the_section.id != -1">
+                        <a class="button" href="${request.route_url('achievements.dev.section.add')}">Create New Section</a>
+                    </td>
+                    <td>
+                        <a tal:condition="the_section != None and the_section.id != -1" class="button" href="${request.route_url('achievements.dev.section.delete',section_id=the_section.id)}">Delete Section</a>
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </form>
+        
+    </div>
+</div>

@@ -1,0 +1,41 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.dev')}" class="inbutton">Dev</a>
+    </div>
+    <div metal:fill-slot="content">
+        <div tal:condition="the_section == None">
+            <br />
+            <div class="error">
+                ${message}
+            </div>
+            <table border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td><a class="button" href="${request.route_url('my_docs')}">My documents</a></td>
+                    <td><a class="button" href="${request.route_url('create_doc')}">Create New Doc</a></td>
+                </tr>
+            </table>
+        </div>
+        
+        <form tal:condition="the_section != None and the_section.name != ''" action="${request.route_url('achievements.dev.section.delete', section_id=the_section.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
+            
+            <div style="border: 1px solid #000; width: 600px; margin: 0 auto; text-align:center; padding: 10px; margin-top: 40px;">
+                Are you sure you want to delete the section ${the_section.name}?
+                <br />
+                
+                <a href="${request.route_url('achievements.dev.section.edit', section_id=the_section.id)}" style="float: left; width:250px;" class="button" name="cancel" id="cancel">No, keep the section</a>
+                <input style="float: right; width:250px;" class="button red_button" type="submit" name="form.submitted" id="delete" value="Yes, delete the section" />
+                
+                <div style="clear:left;">&nbsp;</div>
+            </div>
+            
+        </form>
+        &nbsp;
+        <div tal:condition="the_section != None and the_section.name == ''" style="border: 1px solid #000; width: 500px; margin: 0 auto; text-align:center; padding: 10px; margin-top: 40px;">
+            The section has been deleted
+            <br /><br />
+            
+            <a class="button" href="${request.route_url('achievements.dev')}" style="margin: 0 auto;">Achievements dev</a>
+        </div>
+    </div>
+</div>
