@@ -14,9 +14,106 @@
             There are currently no achievement sections. You will need to add a new one through the <a href="${request.route_url('achievements.dev.section.add')}">Add section</a> page.
         </div>
         
+        <script type="text/javascript" charset="utf-8" tal:condition="sections != []">
+            // CATEGORIES
+            function get_categories (section_id)
+            {
+                existing_td = $('#category_list_results_' + section_id).html();
+                
+                if (existing_td == undefined)
+                {
+                    _ajax_get_categories_drilldown(section_id);
+                }
+                else
+                {
+                    $('#category_list_row' + section_id).show();
+                }
+                
+                $('#cat_button_' + section_id).hide();
+                $('#hide_cat_button_' + section_id).show();
+            }
+            
+            function _ajax_get_categories_drilldown (section_id)
+            {
+                td = $('#section_categories_' + section_id);
+                
+                // Add a drilldown row
+                td.parent().after('<tr id="category_list_row' + section_id + '"><td colspan="13" id="category_list_results_' + section_id + '">Loading drilldown...</td></tr>');
+                
+                // Load the drilldown
+                $('#category_list_results_' + section_id).load(
+                    '${request.route_url('achievements.ajax.list_categories')}',
+                    {'section':section_id},
+                    function () {
+                        $('#category_list_results_' + section_id + ' .button').button();
+                        $('#category_list_results_' + section_id + ' .inbutton').button();
+                    }
+                );
+            }
+            
+            function hide_categories (category_id)
+            {
+                $('#category_list_row' + category_id).hide();
+                $('#hide_cat_button_' + category_id).hide();
+                $('#cat_button_' + category_id).show();
+            }
+            
+            // SUB CATEGORIES
+            function get_subcategories (category_id)
+            {
+                existing_td = $('#subcategory_list_results_' + category_id).html();
+                
+                if (existing_td == undefined)
+                {
+                    _ajax_get_subcategories_drilldown(category_id);
+                }
+                else
+                {
+                    $('#subcategory_list_row' + category_id).show();
+                }
+                
+                $('#cat_button_' + category_id).hide();
+                $('#hide_subcat_button_' + category_id).show();
+            }
+            
+            function _ajax_get_subcategories_drilldown (category_id)
+            {
+                td = $('#section_subcategories_' + category_id);
+                
+                // Add a drilldown row
+                td.parent().after('<tr id="subcategory_list_row' + category_id + '"><td colspan="13" id="subcategory_list_results_' + category_id + '">Loading drilldown...</td></tr>');
+                
+                // Load the drilldown
+                $('#subcategory_list_results_' + category_id).load(
+                    '${request.route_url('achievements.ajax.list_subcategories')}',
+                    {'section':category_id},
+                    function () {
+                        $('#subcategory_list_results_' + category_id + ' .button').button();
+                        $('#subcategory_list_results_' + category_id + ' .inbutton').button();
+                    }
+                );
+            }
+            
+            function hide_subcategories (category_id)
+            {
+                $('#subcategory_list_row' + category_id).hide();
+                $('#hide_subcat_button_' + category_id).hide();
+                $('#cat_button_' + category_id).show();
+            }
+            
+            // ACHIEVEMENTS
+            
+        </script>
+        
         <table border="0" cellspacing="0" cellpadding="5" tal:condition="sections != []">
             <tr tal:repeat="s sections">
-                <td style="min-width:200px;">${s.name}</td>
+                <td style="min-width:200px;"><strong>${s.name}</strong></td>
+                <td class="button_cell" id="section_categories_${s.id}">
+                    <a class="inbutton" href="#" onclick="get_categories(${s.id}); return false;" id="cat_button_${s.id}">Expand</a>
+                    
+                    <a style="display:none;" class="inbutton" href="#" onclick="hide_categories(${s.id}); return false;" id="hide_cat_button_${s.id}">Hide</a>
+                </td>
+                
                 <td class="button_cell"><a href="${request.route_url('achievements.dev.section.edit', section_id=s.id)}" class="inbutton">Edit</a></td>
                 <td class="button_cell"><a href="${request.route_url('achievements.dev.section.delete', section_id=s.id)}" class="inbutton red_button">X</a></td>
             </tr>

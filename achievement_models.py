@@ -71,6 +71,10 @@ class AchievementType(Base):
     # Can't be found by searching, only show if they have the achievement
     private = Column(Boolean, default=False)
     
+    section     = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
+    category    = Column(Integer, ForeignKey("achievement_categories.id"), nullable=False)
+    subcategory = Column(Integer, ForeignKey("achievement_subcategories.id"), nullable=False, index=True)
+    
     achievements = relationship("Achievement")
     
     def __init__(self, lookup, name, description, points=0, activation_count=1, duration=None, section="", sub_section=""):

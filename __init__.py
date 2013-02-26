@@ -2,6 +2,11 @@ from . import config
 from . import api
 
 def add_views(config):
+    # Ajax
+    config.add_route('achievements.ajax.list_categories', '/achievements/ajax/list_categories')
+    config.add_route('achievements.ajax.list_subcategories', '/achievements/ajax/list_subcategories')
+    config.add_route('achievements.ajax.list_achievements', '/achievements/ajax/list_achievements')
+    
     # Dev
     config.add_route('achievements.dev.section.add', '/achievements/dev/section/add')
     config.add_route('achievements.dev.section.edit', '/achievements/dev/section/edit/{section_id}')
@@ -11,10 +16,16 @@ def add_views(config):
     # Admin
     config.add_route('achievements.admin.category.add', '/achievements/admin/category/add')
     config.add_route('achievements.admin.category.edit', '/achievements/admin/category/edit/{category_id}')
+    config.add_route('achievements.admin.category.delete', '/achievements/admin/category/delete/{category_id}')
+    
     config.add_route('achievements.admin.subcategory.add', '/achievements/admin/subcategory/add')
-    config.add_route('achievements.admin.subcategory.edit', '/achievements/admin/subcategory/edit/{category_id}')
+    config.add_route('achievements.admin.subcategory.edit', '/achievements/admin/subcategory/edit/{subcategory_id}')
+    config.add_route('achievements.admin.subcategory.delete', '/achievements/admin/subcategory/delete/{subcategory_id}')
+    
     config.add_route('achievements.admin.achievement.add', '/achievements/admin/achievement/add')
-    config.add_route('achievements.admin.achievement.edit', '/achievements/admin/achievement/edit/{category_id}')
+    config.add_route('achievements.admin.achievement.edit', '/achievements/admin/achievement/edit/{achievement_id}')
+    config.add_route('achievements.admin.achievement.delete', '/achievements/admin/achievement/delete/{achievement_id}')
+    
     config.add_route('achievements.admin', '/achievements/admin')
     
     # User

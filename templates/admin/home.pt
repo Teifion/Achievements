@@ -1,10 +1,73 @@
 <div metal:use-macro="layout">
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
-        <a href="${request.route_url('achievements.dashboard')}" tal:condition="user_id != request.user.id" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.dev')}" tal:condition="'achievements_dev' in request.user.permissions()" class="inbutton">Achievements Dev</a>
     </div>
     
     <div metal:fill-slot="content">
-        <a href="${request.route_url('achievements.admin.add_section')}" class="inbutton">Add section</a>
-        <a href="${request.route_url('achievements.admin.add_category')}" class="inbutton">Add achievement</a>
+        <a href="${request.route_url('achievements.admin.category.add')}" class="inbutton">Add category</a>
+        <a href="${request.route_url('achievements.admin.subcategory.add')}" class="inbutton">Add sub category</a>
+        <a href="${request.route_url('achievements.admin.achievement.add')}" class="inbutton">Add achievement</a>
+        <br /><br />
+        
+        <div tal:condition="sections == []">
+            There are currently no achievement sections. You will need to add a new one through the <a href="${request.route_url('achievements.admin.section.add')}">Add section</a> page.
+        </div>
+        
+        <script type="text/javascript" charset="utf-8" tal:condition="sections != []">
+            function get_categories (section_id)
+            {
+                existing_td = $('#category_list_results_' + section_id).html();
+                
+                if (existing_td == undefined)
+                {
+                    _ajax_get_categories_drilldown(section_id);
+                }
+                else
+                {
+                    $('#category_list_row' + section_id).show();
+                }
+                
+                $('#cat_button_' + section_id).hide();
+                $('#hidecat_button_' + section_id).show();
+            }
+            
+            function _ajax_get_categories_drilldown (section_id)
+            {
+                td = $('#section_categories_' + section_id);
+                
+                // Add a drilldown row
+                td.parent().after('<tr id="category_list_row' + section_id + '"><td colspan="13" id="category_list_results_' + section_id + '">Loading drilldown...</td></tr>');
+                
+                // Load the drilldown
+                $('#category_list_results_' + section_id).load(
+                    '${request.route_url('achievements.ajax.list_categories')}',
+                    {'section':section_id},
+                    function () {
+                        $('#category_list_results_' + section_id + ' .button').button();
+                        $('#category_list_results_' + section_id + ' .inbutton').button();
+                    }
+                );
+            }
+            
+            function hide_categories (section_id)
+            {
+                $('#category_list_row' + section_id).hide();
+                $('#hidecat_button_' + section_id).hide();
+                $('#cat_button_' + section_id).show();
+            }
+        </script>
+        
+        <table border="0" cellspacing="0" cellpadding="5" tal:condition="sections != []">
+            <tr tal:repeat="s sections">
+                <td style="min-width:200px;"><strong>${s.name}</strong></td>
+                <td class="button_cell" id="section_categories_${s.id}">
+                    <a class="inbutton" href="#" onclick="get_categories(${s.id}); return false;" id="cat_button_${s.id}">Expand</a>
+                    
+                    <a style="display:none;" class="inbutton" href="#" onclick="hide_categories(${s.id}); return false;" id="hidecat_button_${s.id}">Hide</a>
+                </td>
+            </tr>
+        </table>
+        
     </div>
 </div>
