@@ -1,0 +1,133 @@
+<div metal:use-macro="layout">
+    <style type="text/css" media="screen" metal:fill-slot="css">
+        .showcase_icon
+        {
+            display: inline-block;
+            width: 150px;
+            height: 150px;
+            border: 0px solid #CCC;
+            margin: 0 20px;
+        }
+        
+        .edit_showcase_icon
+        {
+            width: 25px;
+            height: 25px;
+            
+            margin: -10px -15px -15px -10px;
+            
+            float:left;
+        }
+        
+        .recents
+        {
+            float: right;
+            width: 225px;
+            border: 0px solid #AAA;
+            text-align:center;
+        }
+        
+        .recent_wrapper
+        {
+            display: inline-block;
+            border: 0px solid #AAA;
+            margin: 15px 5px;
+            text-align: center;
+        }
+        
+        .recent_wrapper strong
+        {
+            font-size: 1.1em;
+        }
+        
+        .recent_icon
+        {
+            width: 75px;
+            height: 75px;
+            border: 0px solid #CCC;
+            margin-bottom: 5px;
+            margin: 0 auto;
+        }
+        
+        .sections
+        {
+            border: 0px solid #AAA;
+            margin-right: 225px;
+        }
+    </style>
+    
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" tal:condition="user_id != request.user.id" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.admin')}" tal:condition="'achievements_admin' in request.user.permissions()" class="inbutton">Admin</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        <script type="text/javascript" charset="utf-8">
+            function show_popup (showcase_number)
+            {
+                $('#showcase_editor').html('Loading...').load('${request.route_url('achievements.showcase_popup')}').dialog(
+                    {
+                        title:'Select trophy',
+                        position:[($(window).width() / 2) - (600 / 2), 150],
+                        modal:true,
+                        minWidth:600,
+                        buttons:{
+                            Cancel: function() {$(this).dialog('close');}
+                        }
+                    }
+                );
+            }
+        </script>
+        
+        <!-- Showcase for drag and drop -->
+        <div class="showcase">
+            <h3>Showcase</h3>
+            
+            <div class="showcase_icon" tal:repeat="s showcase.items">
+                <div class="edit_showcase_icon" tal:condition="user_id == request.user.id">
+                    <div onclick="show_popup(${repeat.s.index});" class="ui-state-default ui-corner-all icon_button" title="Edit trophy">
+                        <span class="ui-icon ui-icon-wrench"></span>
+                    </div>
+                </div>
+                
+                <img tal:condition="s != 0" src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(achievement_types[s].lookup))}" width="150" height="150"/>
+            </div>
+        </div>
+        
+        <div id="showcase_editor" style="display:none;">
+            &nbsp;
+        </div>
+        
+        <a href="${request.route_url('achievements.search')}" class="inbutton">Search achievements</a>
+        <a href="${request.route_url('achievements.admin')}" tal:condition="'achievements_admin' in request.user.permissions()" class="inbutton">Achievements admin</a>
+        
+        
+        <!-- Recents achievements -->
+        <div class="recents">
+            <h3>Recent achievements</h3>
+            <div tal:condition="recents == []">
+                You have not completed any achievements recently.
+            </div>
+            
+            <div class="recent_wrapper" tal:repeat="a recents">
+                <div class="recent_icon">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(achievement_types[a.item].lookup))}" width="75" height="75"/>
+                </div>
+                <strong>${achievement_types[a.item].name} (${achievement_types[a.item].points})</strong><br />
+                ${a.first_awarded.strftime("%d/%m/%Y")}
+            </div>
+        </div>
+        
+        <!-- Main content block -->
+        <div class="sections">
+            <h3>Sections<h3>
+            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements.category', user_id=user_id, category=s)}" style="width: 400px; height 40px;">
+                ${sections[s]['name']}
+            </a>
+        </div>
+        
+        <div style="clear:both;">
+            &nbsp;
+        </div>
+    </div>
+</div>

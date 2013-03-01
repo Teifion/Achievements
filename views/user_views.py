@@ -25,7 +25,7 @@ def achievement_dashboard(request):
     else:
         user_id = request.user.id
         player_name = request.user.name
-        
+    
     # Showcase chosen by user
     showcase = config['DBSession'].query(AchievementShowcase.items).filter(AchievementShowcase.user == user_id).first()
     if showcase == None:

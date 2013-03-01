@@ -22,6 +22,7 @@ def list_categories(request):
     
     request.do_not_log = True
     return dict(
+        section_id = section_id,
         categories = list(categories)
     )
 
@@ -29,24 +30,26 @@ def list_categories(request):
 def list_subcategories(request):
     category_id = int(request.params['category'])
     
-    categories = config['DBSession'].query(AchievementSubCategory).filter(
+    subcategories = config['DBSession'].query(AchievementSubCategory).filter(
         AchievementSubCategory.category == category_id
     ).order_by(AchievementSubCategory.name.asc())
     
     request.do_not_log = True
     return dict(
-        categories = list(categories)
+        subcategories = list(subcategories),
+        category_id = category_id,
     )
 
 @view_config(route_name='achievements.ajax.list_achievements', renderer='../templates/ajax/list_achievements.pt', permission='achievements_admin')
 def list_achievements(request):
     subcategory_id = int(request.params['subcategory'])
     
-    categories = config['DBSession'].query(AchievementType).filter(
+    achievements = config['DBSession'].query(AchievementType).filter(
         AchievementType.subcategory == subcategory_id
     ).order_by(AchievementType.name.asc())
     
     request.do_not_log = True
     return dict(
-        categories = list(categories)
+        achievements = list(achievements),
+        subcategory_id = subcategory_id,
     )

@@ -18,9 +18,9 @@
             // CATEGORIES
             function get_categories (section_id)
             {
-                existing_td = $('#category_list_results_' + section_id).html();
+                var existing_tr = $('#category_list_results_' + section_id).html();
                 
-                if (existing_td == undefined)
+                if (existing_tr == undefined)
                 {
                     _ajax_get_categories_drilldown(section_id);
                 }
@@ -35,10 +35,10 @@
             
             function _ajax_get_categories_drilldown (section_id)
             {
-                td = $('#section_categories_' + section_id);
+                var tr = $('#section_row_' + section_id);
                 
                 // Add a drilldown row
-                td.parent().after('<tr id="category_list_row' + section_id + '"><td colspan="13" id="category_list_results_' + section_id + '">Loading drilldown...</td></tr>');
+                tr.after('<tr id="category_list_row' + section_id + '"><td colspan="13" id="category_list_results_' + section_id + '">Loading drilldown...</td></tr>');
                 
                 // Load the drilldown
                 $('#category_list_results_' + section_id).load(
@@ -61,9 +61,9 @@
             // SUB CATEGORIES
             function get_subcategories (category_id)
             {
-                existing_td = $('#subcategory_list_results_' + category_id).html();
+                var existing_tr = $('#subcategories_row_' + category_id).html();
                 
-                if (existing_td == undefined)
+                if (existing_tr == undefined)
                 {
                     _ajax_get_subcategories_drilldown(category_id);
                 }
@@ -71,22 +71,21 @@
                 {
                     $('#subcategory_list_row' + category_id).show();
                 }
-                
-                $('#cat_button_' + category_id).hide();
+                $('#subcat_button_' + category_id).hide();
                 $('#hide_subcat_button_' + category_id).show();
             }
             
             function _ajax_get_subcategories_drilldown (category_id)
             {
-                td = $('#section_subcategories_' + category_id);
+                var tr = $('#categories_row_' + category_id);
                 
                 // Add a drilldown row
-                td.parent().after('<tr id="subcategory_list_row' + category_id + '"><td colspan="13" id="subcategory_list_results_' + category_id + '">Loading drilldown...</td></tr>');
+                tr.after('<tr id="subcategory_list_row' + category_id + '"><td colspan="13" id="subcategory_list_results_' + category_id + '">Loading drilldown...</td></tr>');
                 
                 // Load the drilldown
                 $('#subcategory_list_results_' + category_id).load(
                     '${request.route_url('achievements.ajax.list_subcategories')}',
-                    {'section':category_id},
+                    {'category':category_id},
                     function () {
                         $('#subcategory_list_results_' + category_id + ' .button').button();
                         $('#subcategory_list_results_' + category_id + ' .inbutton').button();
@@ -98,7 +97,7 @@
             {
                 $('#subcategory_list_row' + category_id).hide();
                 $('#hide_subcat_button_' + category_id).hide();
-                $('#cat_button_' + category_id).show();
+                $('#subcat_button_' + category_id).show();
             }
             
             // ACHIEVEMENTS
@@ -106,9 +105,9 @@
         </script>
         
         <table border="0" cellspacing="0" cellpadding="5" tal:condition="sections != []">
-            <tr tal:repeat="s sections">
+            <tr tal:repeat="s sections" id="section_row_${s.id}">
                 <td style="min-width:200px;"><strong>${s.name}</strong></td>
-                <td class="button_cell" id="section_categories_${s.id}">
+                <td class="button_cell">
                     <a class="inbutton" href="#" onclick="get_categories(${s.id}); return false;" id="cat_button_${s.id}">Expand</a>
                     
                     <a style="display:none;" class="inbutton" href="#" onclick="hide_categories(${s.id}); return false;" id="hide_cat_button_${s.id}">Hide</a>

@@ -29,7 +29,7 @@
             
             Owner: ${user_names[the_section.owner]}
             <br /><br />
-            <table border="0" cellspacing="0" cellpadding="5" style="width:100%;">
+            <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
                     <td><label for="name">Section name:</label></td>
                     <td><input type="text" name="name" id="name" value="${the_section.name}" size="30"/></td>
@@ -49,12 +49,13 @@
             </table>
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
+                    <td><a href="${request.route_url('achievements.dev')}" class="inbutton">List sections</a></td>
                     <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
                     <td tal:condition="the_section.id != -1">
                         <a class="button" href="${request.route_url('achievements.dev.section.add')}">Create New Section</a>
                     </td>
                     <td>
-                        <a tal:condition="the_section != None and the_section.id != -1" class="button" href="${request.route_url('achievements.dev.section.delete',section_id=the_section.id)}">Delete Section</a>
+                        <a tal:condition="the_section != None and the_section.id != -1" class="button red_button" href="${request.route_url('achievements.dev.section.delete',section_id=the_section.id)}">Delete Section</a>
                         &nbsp;
                     </td>
                 </tr>
