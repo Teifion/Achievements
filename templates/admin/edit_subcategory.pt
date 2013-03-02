@@ -5,8 +5,7 @@
     </div>
     
     <div metal:fill-slot="content">
-        
-        <form tal:condition="the_category != None" action="${request.route_url('achievements.admin.category.edit', category_id=the_category.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
+        <form tal:condition="the_subcategory != None" action="${request.route_url('achievements.admin.subcategory.edit', subcategory_id=the_subcategory.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
             <div tal:condition="message != ''" id="flash_update" style="border: 1px solid #AAA; margin:10px; padding:10px; text-align:center;">
                 ${message}
                 
@@ -25,19 +24,19 @@
                 });
             </script>
             
-            <input type="hidden" name="section_id" id="section_id" value="${the_category.id}" />
+            <input type="hidden" name="category_id" id="category_id" value="${the_subcategory.id}" />
             
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
-                    <td><label for="name">Category name:</label></td>
-                    <td><input type="text" name="name" id="name" value="${the_category.name}" size="30"/></td>
+                    <td><label for="name">Subcategory name:</label></td>
+                    <td><input type="text" name="name" id="name" value="${the_subcategory.name}" size="30"/></td>
                     
                     <td style="width:5x;">&nbsp;</td>
                     
-                    <td><label for="section">Parent section:</label></td>
+                    <td><label for="category">Parent category:</label></td>
                     <td>
-                        <select name="section" id="section">
-                            ${structure:sections}
+                        <select name="category" id="category">
+                            ${structure:categories}
                         </select>
                     </td>
                     
@@ -45,19 +44,19 @@
                     
                     <td><label for="private">Private:</label></td>
                     <td style="">
-                        <input type="checkbox" id="private" name="private" tal:attributes="checked the_category.private"/>
+                        <input type="checkbox" id="private" name="private" tal:attributes="checked the_subcategory.private"/>
                     </td>
                 </tr>
             </table>
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
-                    <td><a href="${request.route_url('achievements.dev')}" class="inbutton">List sections</a></td>
+                    <td><a href="${request.route_url('achievements.admin')}" class="inbutton">List categories</a></td>
                     <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
-                    <td tal:condition="the_category.id != -1">
-                        <a class="button" href="${request.route_url('achievements.dev.section.add')}">Create New Section</a>
+                    <td tal:condition="the_subcategory.id != -1">
+                        <a class="button" href="${request.route_url('achievements.admin.subcategory.add')}?category=${the_subcategory.category}">Create New Subcategory</a>
                     </td>
                     <td>
-                        <a tal:condition="the_category != None and the_category.id != -1" class="button red_button" href="${request.route_url('achievements.dev.section.delete',section_id=the_category.id)}">Delete Section</a>
+                        <a tal:condition="the_subcategory != None and the_subcategory.id != -1" class="button red_button" href="${request.route_url('achievements.admin.subcategory.delete', subcategory_id=the_subcategory.id)}">Delete Catgeory</a>
                         &nbsp;
                     </td>
                 </tr>

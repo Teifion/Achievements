@@ -5,7 +5,6 @@
     </div>
     
     <div metal:fill-slot="content">
-        
         <form tal:condition="the_category != None" action="${request.route_url('achievements.admin.category.edit', category_id=the_category.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
             <div tal:condition="message != ''" id="flash_update" style="border: 1px solid #AAA; margin:10px; padding:10px; text-align:center;">
                 ${message}
@@ -51,13 +50,13 @@
             </table>
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
-                    <td><a href="${request.route_url('achievements.dev')}" class="inbutton">List sections</a></td>
+                    <td><a href="${request.route_url('achievements.admin')}" class="inbutton">List sections</a></td>
                     <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
                     <td tal:condition="the_category.id != -1">
-                        <a class="button" href="${request.route_url('achievements.dev.section.add')}">Create New Section</a>
+                        <a class="button" href="${request.route_url('achievements.admin.category.add')}?section=${the_category.section}">Create New Category</a>
                     </td>
                     <td>
-                        <a tal:condition="the_category != None and the_category.id != -1" class="button red_button" href="${request.route_url('achievements.dev.section.delete',section_id=the_category.id)}">Delete Section</a>
+                        <a tal:condition="the_category != None and the_category.id != -1" class="button red_button" href="${request.route_url('achievements.admin.category.delete', category_id=the_category.id)}">Delete Catgeory</a>
                         &nbsp;
                     </td>
                 </tr>

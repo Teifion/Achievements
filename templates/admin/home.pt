@@ -7,7 +7,7 @@
     <div metal:fill-slot="content">
         <a href="${request.route_url('achievements.admin.category.add')}" class="inbutton">Add category</a>
         <a href="${request.route_url('achievements.admin.subcategory.add')}" class="inbutton">Add sub category</a>
-        <a href="${request.route_url('achievements.admin.achievement.add')}" class="inbutton">Add achievement</a>
+        <a href="${request.route_url('achievements.admin.achievement_type.add')}" class="inbutton">Add achievement type</a>
         <br /><br />
         
         <div tal:condition="sections == []">

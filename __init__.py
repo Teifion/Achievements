@@ -5,7 +5,7 @@ def add_views(config):
     # Ajax
     config.add_route('achievements.ajax.list_categories', '/achievements/ajax/list_categories')
     config.add_route('achievements.ajax.list_subcategories', '/achievements/ajax/list_subcategories')
-    config.add_route('achievements.ajax.list_achievements', '/achievements/ajax/list_achievements')
+    config.add_route('achievements.ajax.list_achievement_types', '/achievements/ajax/list_achievement_types')
     
     # Dev
     config.add_route('achievements.dev.section.add', '/achievements/dev/section/add')
@@ -22,9 +22,9 @@ def add_views(config):
     config.add_route('achievements.admin.subcategory.edit', '/achievements/admin/subcategory/edit/{subcategory_id}')
     config.add_route('achievements.admin.subcategory.delete', '/achievements/admin/subcategory/delete/{subcategory_id}')
     
-    config.add_route('achievements.admin.achievement.add', '/achievements/admin/achievement/add')
-    config.add_route('achievements.admin.achievement.edit', '/achievements/admin/achievement/edit/{achievement_id}')
-    config.add_route('achievements.admin.achievement.delete', '/achievements/admin/achievement/delete/{achievement_id}')
+    config.add_route('achievements.admin.achievement_type.add', '/achievements/admin/achievement_type/add')
+    config.add_route('achievements.admin.achievement_type.edit', '/achievements/admin/achievement_type/edit/{achievement_type_id}')
+    config.add_route('achievements.admin.achievement_type.delete', '/achievements/admin/achievement_type/delete/{achievement_type_id}')
     
     config.add_route('achievements.admin', '/achievements/admin')
     

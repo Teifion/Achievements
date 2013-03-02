@@ -40,16 +40,16 @@ def list_subcategories(request):
         category_id = category_id,
     )
 
-@view_config(route_name='achievements.ajax.list_achievements', renderer='../templates/ajax/list_achievements.pt', permission='achievements_admin')
-def list_achievements(request):
+@view_config(route_name='achievements.ajax.list_achievement_types', renderer='../templates/ajax/list_achievement_types.pt', permission='achievements_admin')
+def list_achievement_types(request):
     subcategory_id = int(request.params['subcategory'])
     
-    achievements = config['DBSession'].query(AchievementType).filter(
+    achievement_types = config['DBSession'].query(AchievementType).filter(
         AchievementType.subcategory == subcategory_id
     ).order_by(AchievementType.name.asc())
     
     request.do_not_log = True
     return dict(
-        achievements = list(achievements),
+        achievement_types = list(achievement_types),
         subcategory_id = subcategory_id,
     )

@@ -47,43 +47,41 @@ class AchievementSubCategory(Base):
     private = Column(Boolean, default=False)
     
     # Set to -1 if has no parent
-    section  = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
+    # section  = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
     category  = Column(Integer, ForeignKey("achievement_categories.id"), nullable=False, index=True)
 
 class AchievementType(Base):
     __tablename__ = 'achievement_types'
     id            = Column(Integer, primary_key=True)
     
-    # The name used to look it up, this allows us to have multiple achievements with the same name
-    lookup        = Column(String, nullable=False, unique=True, index=True)
+    # This is used when we programatically assign achievements so we can look up
+    # the achievement knowing what it's lookup will be and not need to
+    # worry about other achievements with the same name
+    lookup        = Column(String, nullable=True, unique=True, index=True)
     
     # The name displayed to users
-    name          = Column(String, nullable=False)
+    name  = Column(String, nullable=False)
+    
+    # The name of a given instance (so the type is 'Best seller' but the label is 'Best seller of X'
+    label = Column(String, nullable=False, default="")
+    
+    # Information about the achievement and how to achieve it. We're putting it
+    # as text just incase we want to use a long piece of text
     description   = Column(Text, nullable=False)
+    
     points        = Column(Integer, nullable=False)
     
     # How many times must you do something to get the achievement?
     activation_count = Column(Integer, nullable=False, default=0)
     
-    # Some achievements expire after a certain amount of time
-    duration = Column(Interval, nullable=True)
-    
     # Can't be found by searching, only show if they have the achievement
     private = Column(Boolean, default=False)
     
-    section     = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
-    category    = Column(Integer, ForeignKey("achievement_categories.id"), nullable=False)
+    # section     = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
+    # category    = Column(Integer, ForeignKey("achievement_categories.id"), nullable=False)
     subcategory = Column(Integer, ForeignKey("achievement_subcategories.id"), nullable=False, index=True)
     
     achievements = relationship("Achievement")
-    
-    def __init__(self, lookup, name, description, points=0, activation_count=1, duration=None, section="", sub_section=""):
-        self.lookup           = lookup
-        self.name             = name
-        self.description      = description
-        self.points           = points
-        self.activation_count = activation_count
-        self.duration         = duration
 
 class Achievement(Base):
     __tablename__ = 'achievements'

@@ -1,0 +1,101 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.dev')}" class="inbutton">Dev</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        <form tal:condition="the_achievement_type != None" action="${request.route_url('achievements.admin.achievement_type.edit', achievement_type_id=the_achievement_type.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
+            <div tal:condition="message != ''" id="flash_update" style="border: 1px solid #AAA; margin:10px; padding:10px; text-align:center;">
+                ${message}
+                
+                <script type="text/javascript" charset="utf-8">
+                    $(document).ready(function() {
+                        $('#flash_update').show();
+                        $('#flash_update').animate({ backgroundColor: "#${flash_colour}" }, 500);
+                        $('#flash_update').animate({ backgroundColor: "#FFF" }, 1500);
+                    });
+                </script>
+            </div>
+            
+            <script type="text/javascript" charset="utf-8">    
+                $(document).ready(function() {
+                    $('#name').focus();
+                });
+            </script>
+            
+            <input type="hidden" name="subcategory_id" id="subcategory_id" value="${the_achievement_type.id}" />
+            
+            <table border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td><label for="name">Achievement type name:</label></td>
+                    <td><input type="text" name="name" id="name" value="${the_achievement_type.name}" size="30"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="subcategory">Parent sub category:</label></td>
+                    <td>
+                        <select name="subcategory" id="subcategory">
+                            ${structure:subcategories}
+                        </select>
+                    </td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="private">Private:</label></td>
+                    <td style="">
+                        <input type="checkbox" id="private" name="private" tal:attributes="checked the_achievement_type.private"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="label">Label:</label></td>
+                    <td><input type="text" name="label" id="label" value="${the_achievement_type.label}" size="30"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="points">Points value:</label></td>
+                    <td><input type="text" name="points" id="points" value="${the_achievement_type.points}" size="5"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr style="color:#888;">
+                    <td><label for="lookup">Lookup:</label></td>
+                    <td><input type="text" name="lookup" id="lookup" value="${the_achievement_type.lookup}" size="30"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="activation_count">Activation count:</label></td>
+                    <td><input type="text" name="activation_count" id="activation_count" value="${the_achievement_type.activation_count}" size="5"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                
+                <tr>
+                    <td colspan="8"><label for="description">Description:</label><br />
+                        <textarea name="description" id="description" rows="8" style="width:100%;"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <table border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td><a href="${request.route_url('achievements.admin')}" class="inbutton">List sections</a></td>
+                    <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
+                    <td tal:condition="the_achievement_type.id != -1">
+                        <a class="button" href="${request.route_url('achievements.admin.achievement_type.add')}?subcategory=${the_achievement_type.subcategory}">Create New Achievement type</a>
+                    </td>
+                    <td>
+                        <a tal:condition="the_achievement_type != None and the_achievement_type.id != -1" class="button red_button" href="${request.route_url('achievements.admin.achievement_type.delete', achievement_type_id=the_achievement_type.id)}">Delete Achievement type</a>
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </form>
+        
+    </div>
+</div>

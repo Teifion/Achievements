@@ -7,7 +7,7 @@
         <a href="${request.route_url('achievements.dev.section.add')}" class="inbutton">Add section</a>
         <a href="${request.route_url('achievements.admin.category.add')}" class="inbutton">Add category</a>
         <a href="${request.route_url('achievements.admin.subcategory.add')}" class="inbutton">Add sub category</a>
-        <a href="${request.route_url('achievements.admin.achievement.add')}" class="inbutton">Add achievement</a>
+        <a href="${request.route_url('achievements.admin.achievement_type.add')}" class="inbutton">Add achievement type</a>
         <br /><br />
         
         <div tal:condition="sections == []">
@@ -100,8 +100,47 @@
                 $('#subcat_button_' + category_id).show();
             }
             
-            // ACHIEVEMENTS
+            // ACHIEVEMENT TYPES
+            function get_achievement_types (subcategory_id)
+            {
+                var existing_tr = $('#achievement_types_row_' + subcategory_id).html();
+                
+                if (existing_tr == undefined)
+                {
+                    _ajax_get_achievement_types_drilldown(subcategory_id);
+                }
+                else
+                {
+                    $('#achievement_types_list_row' + subcategory_id).show();
+                }
+                $('#achievement_types_button_' + subcategory_id).hide();
+                $('#hide_achievement_types_button_' + subcategory_id).show();
+            }
             
+            function _ajax_get_achievement_types_drilldown (subcategory_id)
+            {
+                var tr = $('#subcategories_row_' + subcategory_id);
+                
+                // Add a drilldown row
+                tr.after('<tr id="achievement_types_list_row' + subcategory_id + '"><td colspan="13" id="achievement_types_list_results_' + subcategory_id + '">Loading drilldown...</td></tr>');
+                
+                // Load the drilldown
+                $('#achievement_types_list_results_' + subcategory_id).load(
+                    '${request.route_url('achievements.ajax.list_achievement_types')}',
+                    {'subcategory':subcategory_id},
+                    function () {
+                        $('#achievement_types_list_results_' + subcategory_id + ' .button').button();
+                        $('#achievement_types_list_results_' + subcategory_id + ' .inbutton').button();
+                    }
+                );
+            }
+            
+            function hide_achievement_types (subcategory_id)
+            {
+                $('#achievement_types_list_row' + subcategory_id).hide();
+                $('#hide_achievement_types_button_' + subcategory_id).hide();
+                $('#achievement_types_button_' + subcategory_id).show();
+            }
         </script>
         
         <table border="0" cellspacing="0" cellpadding="5" tal:condition="sections != []">

@@ -2,9 +2,9 @@
     <tr tal:repeat="sc subcategories" id="subcategories_row_${sc.id}" >
         <td><strong>${sc.name}</strong></td>
         <td class="button_cell" style="width:60px;">
-            <a class="inbutton" href="#" onclick="get_achievements(${sc.id}); return false;" id="achievements_button_${c.id}">Expand</a>
+            <a class="inbutton" href="#" onclick="get_achievement_types(${sc.id}); return false;" id="achievement_types_button_${sc.id}">Expand</a>
             
-            <a style="display:none;" class="inbutton" href="#" onclick="hide_achievements(${sc.id}); return false;" id="hide_achievements_button_${c.id}">Hide</a>
+            <a style="display:none;" class="inbutton" href="#" onclick="hide_achievement_types(${sc.id}); return false;" id="hide_achievement_types_button_${sc.id}">Hide</a>
         </td>
         
         <td class="button_cell" style="width:60px;"><a href="${request.route_url('achievements.admin.subcategory.edit', subcategory_id=sc.id)}" class="inbutton">Edit</a></td>
@@ -14,7 +14,7 @@
 <table border="0" cellspacing="0" style="width:100%; border-left: 1px solid #666; margin-left:10px;">
     <tr>
         <td class="button_cell">
-            <a href="${request.route_url('achievements.admin.subcategory.add')}?category=${category_id}" class="inbutton">Add sub category</a>
+            <a href="${request.route_url('achievements.admin.achievement_type.add')}?subcategory=${category_id}" class="inbutton">Add subcategory</a>
         </td>
     </tr>
 </table>
