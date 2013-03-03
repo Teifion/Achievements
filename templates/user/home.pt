@@ -83,14 +83,14 @@
         <div class="showcase">
             <h3>Showcase</h3>
             
-            <div class="showcase_icon" tal:repeat="s showcase.items">
-                <div class="edit_showcase_icon" tal:condition="user_id == request.user.id">
-                    <div onclick="show_popup(${repeat.s.index});" class="ui-state-default ui-corner-all icon_button" title="Edit trophy">
+            <div class="showcase_icon" tal:repeat="atype showcase">
+                <div class="edit_showcase_icon" tal:condition="user_id == request.user.id and False">
+                    <div onclick="show_popup(${repeat.atype.index});" class="ui-state-default ui-corner-all icon_button" title="Edit trophy">
                         <span class="ui-icon ui-icon-wrench"></span>
                     </div>
                 </div>
                 
-                <img tal:condition="s != 0" src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(achievement_types[s].lookup))}" width="150" height="150"/>
+                <img tal:condition="atype != None" src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(atype.lookup))}" width="150" height="150"/>
             </div>
         </div>
         
@@ -107,24 +107,20 @@
         <!-- Recents achievements -->
         <div class="recents">
             <h3>Recent achievements</h3>
-            <div tal:condition="recents == []">
-                You have not completed any achievements recently.
-            </div>
-            
             <div class="recent_wrapper" tal:repeat="a recents">
                 <div class="recent_icon">
-                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(achievement_types[a.item].lookup))}" width="75" height="75"/>
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a[1].lookup))}" width="75" height="75"/>
                 </div>
-                <strong>${achievement_types[a.item].name} (${achievement_types[a.item].points})</strong><br />
-                ${a.first_awarded.strftime("%d/%m/%Y")}
+                <strong>${a[1].name} (${a[1].points})</strong><br />
+                ${a[0].first_awarded.strftime("%d/%m/%Y")}
             </div>
         </div>
         
         <!-- Main content block -->
         <div class="sections">
             <h3>Sections<h3>
-            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements.category', user_id=user_id, category=s)}" style="width: 400px; height 40px;">
-                ${sections[s]['name']}
+            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements.section', user_id=user_id, section_id=s.id)}" style="width: 400px; height 40px;">
+                ${s.name}
             </a>
         </div>
         

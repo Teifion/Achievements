@@ -102,6 +102,7 @@ class Achievement(Base):
 class AchievementShowcase(Base):
     """A list of the achievements a player is showing in their showcase."""
     __tablename__ = 'achievement_showcase'
-    id            = Column(Integer, primary_key=True)
-    user          = Column(Integer, ForeignKey("users.id"), nullable=False)
-    items         = Column(ARRAY(Integer), nullable=False, default=[])
+    id          = Column(Integer, primary_key=True)
+    user        = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    achievement = Column(Integer, ForeignKey("achievement_types.id"), nullable=False)
+    placement   = Column(Integer, nullable=False)
