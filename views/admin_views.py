@@ -251,6 +251,9 @@ def edit_achievement_type(request):
         the_achievement_type.name             = request.params['name'].strip()
         the_achievement_type.label            = request.params['label'].strip()
         the_achievement_type.lookup           = request.params['lookup'].strip()
+        if the_achievement_type.lookup == "":
+            the_achievement_type.lookup = None
+        
         the_achievement_type.description      = request.params['description'].strip()
         the_achievement_type.points           = int(request.params['points'])
         the_achievement_type.activation_count = int(request.params['activation_count'])

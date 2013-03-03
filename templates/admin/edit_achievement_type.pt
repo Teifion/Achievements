@@ -87,7 +87,7 @@
                     <td><a href="${request.route_url('achievements.admin')}" class="inbutton">List sections</a></td>
                     <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
                     <td tal:condition="the_achievement_type.id != -1">
-                        <a class="button" href="${request.route_url('achievements.admin.achievement_type.add')}?subcategory=${the_achievement_type.subcategory}">Create New Achievement type</a>
+                        <a class="button" href="${request.route_url('achievements.admin.achievement_type.add')}?subcategory=${the_achievement_type.subcategory}">Create New Type</a>
                     </td>
                     <td>
                         <a tal:condition="the_achievement_type != None and the_achievement_type.id != -1" class="button red_button" href="${request.route_url('achievements.admin.achievement_type.delete', achievement_type_id=the_achievement_type.id)}">Delete Achievement type</a>

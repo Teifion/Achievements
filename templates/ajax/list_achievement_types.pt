@@ -2,8 +2,8 @@
     <tr tal:repeat="at achievement_types" id="achievement_types_row_${at.id}" >
         <td><strong>${at.name}</strong></td>
         
-        <td class="button_cell" style="width:60px;"><a href="${request.route_url('achievements.admin.subcategory.edit', subcategory_id=at.id)}" class="inbutton">Edit</a></td>
-        <td class="button_cell" style="width:30px;"><a href="${request.route_url('achievements.admin.subcategory.delete', subcategory_id=at.id)}" class="inbutton red_button">X</a></td>
+        <td class="button_cell" style="width:60px;"><a href="${request.route_url('achievements.admin.achievement_type.edit', achievement_type_id=at.id)}" class="inbutton">Edit</a></td>
+        <td class="button_cell" style="width:30px;"><a href="${request.route_url('achievements.admin.achievement_type.delete', achievement_type_id=at.id)}" class="inbutton red_button">X</a></td>
     </tr>
 </table>
 <table border="0" cellspacing="0" style="width:100%; border-left: 1px solid #666; margin-left:10px;">

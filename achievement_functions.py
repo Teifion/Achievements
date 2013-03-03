@@ -4,11 +4,6 @@ import transaction
 from collections import OrderedDict
 from .config import config
 
-"""
-Sections is used to decide how to list/group the achievements on the dashboard page.
-"""
-sections = {}
-
 def register(achievement_list):
     """Takes a list of achievement type (or dict) and ensures they exist
     within the database. Any type not in the database is added."""

@@ -11,6 +11,7 @@ from ..config import config
 from ..achievement_models import (
     AchievementType,
     Achievement,
+    AchievementSection,
     AchievementShowcase,
 )
 
@@ -32,33 +33,14 @@ def achievement_dashboard(request):
         showcase = AchievementShowcase()
         showcase.items = [0]*5
     
-    completed = []
-    pending = []
-    recents = []
-    type_ids = set(showcase.items)
-    for a in config['DBSession'].query(Achievement).filter(Achievement.user == user_id).order_by(Achievement.first_awarded.desc()):
-        if a.first_awarded == None:
-            pending.append(a)
-        else:
-            if len(recents) < 5:
-                recents.append(a)
-            completed.append(a)
-        
-        type_ids.add(a.item)
-    
-    achievement_types = {}
-    for a in config['DBSession'].query(AchievementType).filter(AchievementType.id.in_(type_ids)):
-        achievement_types[a.id] = a
+    # The sections to list
+    sections = config['DBSession'].query(AchievementSection).order_by(AchievementSection.name.asc())
     
     return dict(
         title  = "Achievements for {}".format(player_name),
         layout = layout,
-        pending = pending,
-        completed = completed,
-        achievement_types = achievement_types,
-        recents = recents,
         showcase = showcase,
-        sections = achievement_functions.sections,
+        sections = sections,
         user_id = user_id,
         player_name = player_name,
     )

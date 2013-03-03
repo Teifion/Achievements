@@ -27,6 +27,7 @@ class AchievementSection(Base):
     private = Column(Boolean, default=False)
     
     owner   = Column(Integer, ForeignKey("users.id"), nullable=False)
+    description   = Column(Text, nullable=False)
     
     # A list of people that can edit this section
     editors = Column(ARRAY(Integer), nullable=False, default=[])
@@ -36,6 +37,7 @@ class AchievementCategory(Base):
     id      = Column(Integer, primary_key=True)
     name    = Column(String, nullable=False, index=True)
     private = Column(Boolean, default=False)
+    description   = Column(Text, nullable=False)
     
     # Set to -1 if has no parent
     section  = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False, index=True)
@@ -45,6 +47,7 @@ class AchievementSubCategory(Base):
     id      = Column(Integer, primary_key=True)
     name    = Column(String, nullable=False, index=True)
     private = Column(Boolean, default=False)
+    description   = Column(Text, nullable=False)
     
     # Set to -1 if has no parent
     # section  = Column(Integer, ForeignKey("achievement_sections.id"), nullable=False)
