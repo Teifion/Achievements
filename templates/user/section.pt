@@ -5,12 +5,12 @@
     </div>
     
     <div metal:fill-slot="content">
-        <a href="${request.route_url('achievements.section', user_id=user_id, section_id=the_category.section)}" class="inbutton">All categories</a>
+        <a href="${request.route_url('achievements.user', user_id=user_id)}" class="inbutton">All sections</a>
         
         <!-- Main content block -->
-        <h3>${the_category.name} sub categories<h3>
-        <a tal:repeat="s subcategories" class="button" href="${request.route_url('achievements.sub_category', user_id=user_id, subcategory_id=s.id)}" style="width: 400px; height 40px;">
-            ${s.name}
+        <h3>${the_section.name} categories<h3>
+        <a tal:repeat="c categories" class="button" href="${request.route_url('achievements.category', user_id=user_id, category_id=c.id)}" style="width: 400px; height 40px;">
+            ${c.name}
         </a>
     </div>
 </div>

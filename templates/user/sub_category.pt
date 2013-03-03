@@ -21,55 +21,52 @@
     </div>
     
     <div metal:fill-slot="content">
-        <h3>${category['name']}: ${sub_category['name']}</h3>
-        <div tal:repeat="a achievement_list" class="achievement_row">
-            <div tal:define="a_type achievement_types[a]; a_item player_achievements.get(a, None)">
-                
+        <a href="${request.route_url('achievements.category', user_id=user_id, category_id=the_sub_category.category)}" class="inbutton">All sub categories</a>
+        
+        <h3>${the_sub_category.name}</h3>
+        <div tal:repeat="a achievements" class="achievement_row">
+            <div tal:condition="a[1] == None" tal:define="atype a[0];">
                 <!-- No achievement -->
-                <div tal:condition="a_item == None">
-                    <script type="text/javascript">
-                        $(function() {$("#${a_type.lookup}").progressbar({max:100,value:0});});
-                    </script>
-                    
-                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a_type.lookup))}" width="75" height="75" class="achievement_thumb" />
-                    <strong>${a_type.name} - 0/${a_type.activation_count}</strong><br />
-                    ${a_type.description}
-                    <div id="${a_type.lookup}" style="margin-left:85px;">
-                        &nbsp;
-                    </div>
-                </div>
+                <script type="text/javascript">
+                    $(function() {$("#${atype.lookup}").progressbar({max:100,value:0});});
+                </script>
                 
+                <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(atype.lookup))}" width="75" height="75" class="achievement_thumb" />
+                <strong>${atype.name} - 0/${atype.activation_count}</strong><br />
+                ${atype.description}
+                <div id="${atype.lookup}" style="margin-left:85px;">
+                    &nbsp;
+                </div>
+            </div>
+            
+            <div tal:condition="a[1] != None" tal:define="atype a[0]; aitem a[1];">
                 <!-- Partial -->
-                <div tal:condition="a_type.id in player_achievements and (player_achievements[a_type.id].activation_count < a_type.activation_count)">
+                <div tal:condition="aitem.activation_count < atype.activation_count">
                     <script type="text/javascript">
-                        $(function() {$("#${a_type.lookup}").progressbar({max:${a_type.activation_count},value:${player_achievements[a_type.id].activation_count}});});
+                        $(function() {$("#${atype.lookup}").progressbar({max:${atype.activation_count},value:${aitem.activation_count}});});
                     </script>
                     
-                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a_type.lookup))}" width="75" height="75" class="achievement_thumb" />
-                    <strong>${a_type.name} - ${player_achievements[a_type.id].activation_count}/${a_type.activation_count}</strong><br />
-                    ${a_type.description}
-                    <div id="${a_type.lookup}" style="margin-left:85px;">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(atype.lookup))}" width="75" height="75" class="achievement_thumb" />
+                    <strong>${atype.name} - ${aitem.activation_count}/${atype.activation_count}</strong><br />
+                    ${atype.description}
+                    <div id="${atype.lookup}" style="margin-left:85px;">
                         &nbsp;
                     </div>
                 </div>
                 
-                <div tal:condition="a_type.id in player_achievements and (player_achievements[a_type.id].activation_count >= a_type.activation_count)">
+                <div tal:condition="aitem.activation_count >= atype.activation_count">
                     <script type="text/javascript">
-                        $(function() {$("#${a_type.lookup}").progressbar({max:100,value:100});});
+                        $(function() {$("#${atype.lookup}").progressbar({max:100,value:100});});
                     </script>
                     
-                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a_type.lookup))}" width="75" height="75" class="achievement_thumb" />
-                    <strong>${a_type.name} - Completed</strong><br />
-                    ${a_type.description}
-                    <div id="${a_type.lookup}" style="margin-left:85px;">
+                    <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(atype.lookup))}" width="75" height="75" class="achievement_thumb" />
+                    <strong>${atype.name} - Completed</strong><br />
+                    ${atype.description}
+                    <div id="${atype.lookup}" style="margin-left:85px;">
                         &nbsp;
                     </div>
                 </div>
             </div>
         </div>
-        
-        <br /><br />
-        <a href="${request.route_url('achievements.category', user_id=user_id, category=request.matchdict['category'])}" class="button">${category['name']} achievements section</a>
-        <a href="${request.route_url('achievements.user', user_id=user_id)}" class="button">Achievements home</a>
     </div>
 </div>

@@ -5,6 +5,7 @@ from pyramid.view import (
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import get_renderer
 
+from sqlalchemy import and_
 from .. import achievement_functions
 from ..config import config
 
@@ -12,6 +13,8 @@ from ..achievement_models import (
     AchievementType,
     Achievement,
     AchievementSection,
+    AchievementCategory,
+    AchievementSubCategory,
     AchievementShowcase,
 )
 
@@ -28,13 +31,14 @@ def achievement_dashboard(request):
         
         user_id     = int(request.matchdict['user_id'])
         player_name = config['DBSession'].query(attrs[1]).filter(attrs[0] == user_id).one()[0]
+        
     else:
         the_user    = config['get_user'](request)
         user_id     = the_user.id
         player_name = the_user.name
     
     # Showcase chosen by user
-    showcase = list(config['DBSession'].query(AchievementType).filter(AchievementType.id == AchievementShowcase.achievement, AchievementShowcase.user == the_user.id).order_by(AchievementShowcase.placement.desc()).limit(5))
+    showcase = list(config['DBSession'].query(AchievementType).filter(AchievementType.id == AchievementShowcase.achievement, AchievementShowcase.user == user_id).order_by(AchievementShowcase.placement.desc()).limit(5))
     
     while len(showcase) < 5:
         showcase.append(None)
@@ -52,6 +56,121 @@ def achievement_dashboard(request):
         user_id     = user_id,
         player_name = player_name,
         recents     = recents,
+    )
+
+@view_config(route_name='achievements.section', renderer='../templates/user/section.pt', permission='achievements')
+def achievement_sections(request):
+    layout = get_renderer(config['layout']).implementation()
+    
+    attrs = (
+        getattr(config['User'], config['user.id_property']),
+        getattr(config['User'], config['user.name_property'])
+    )
+    
+    user_id     = int(request.matchdict['user_id'])
+    player_name = config['DBSession'].query(attrs[1]).filter(attrs[0] == user_id).one()[0]
+    
+    section_id = int(request.matchdict['section_id'])
+    the_section = config['DBSession'].query(AchievementSection).filter(AchievementSection.id == section_id).first()
+    
+    # The categories to list
+    categories = config['DBSession'].query(AchievementCategory).filter(AchievementCategory.section == section_id).order_by(AchievementCategory.name.asc())
+    
+    return dict(
+        title       = "Achievements for {}".format(player_name),
+        layout      = layout,
+        categories  = categories,
+        user_id     = user_id,
+        player_name = player_name,
+        the_section = the_section,
+    )
+
+@view_config(route_name='achievements.category', renderer='../templates/user/category.pt', permission='achievements')
+def achievement_categories(request):
+    layout = get_renderer(config['layout']).implementation()
+    
+    attrs = (
+        getattr(config['User'], config['user.id_property']),
+        getattr(config['User'], config['user.name_property'])
+    )
+    
+    user_id     = int(request.matchdict['user_id'])
+    player_name = config['DBSession'].query(attrs[1]).filter(attrs[0] == user_id).one()[0]
+    
+    category_id = int(request.matchdict['category_id'])
+    the_category = config['DBSession'].query(AchievementCategory).filter(AchievementCategory.id == category_id).first()
+    
+    # The categories to list
+    subcategories = config['DBSession'].query(AchievementSubCategory).filter(AchievementSubCategory.category == category_id).order_by(AchievementSubCategory.name.asc())
+    
+    return dict(
+        title         = "Achievements for {}".format(player_name),
+        layout        = layout,
+        subcategories = subcategories,
+        the_category  = the_category,
+        user_id       = user_id,
+        player_name   = player_name,
+    )
+
+
+@view_config(route_name='achievements.sub_category', renderer='../templates/user/sub_category.pt', permission='achievements')
+def achievements_sub_category(request):
+    layout = get_renderer(config['layout']).implementation()
+    
+    attrs = (
+        getattr(config['User'], config['user.id_property']),
+        getattr(config['User'], config['user.name_property'])
+    )
+    
+    user_id     = int(request.matchdict['user_id'])
+    player_name = config['DBSession'].query(attrs[1]).filter(attrs[0] == user_id).one()[0]
+    
+    sub_category_id = int(request.matchdict['subcategory_id'])
+    the_sub_category = config['DBSession'].query(AchievementSubCategory).filter(AchievementSubCategory.id == sub_category_id).first()
+    
+    # SELECT achievement_types.name, achievements.first_awarded FROM achievement_types
+    #     LEFT OUTER JOIN achievements ON (achievement_types.id = achievements.item AND achievements.user = 1)
+    # WHERE achievement_types.subcategory = 1
+    # ORDER BY achievement_types.id ASC
+    
+    achievements = config['DBSession'].query(AchievementType, Achievement).outerjoin(
+        Achievement, (
+            and_(
+                Achievement.item == AchievementType.id,
+                Achievement.user == user_id,
+            ))).filter(AchievementType.subcategory == sub_category_id)
+    
+    print(achievements)
+    
+    # filter(*filters)
+    
+    # achievement_types = {}
+    # lookup = {}
+    # for a in config['DBSession'].query(AchievementType).filter(AchievementType.lookup.in_(achievement_names)):
+    #     achievement_types[a.id] = a
+    #     lookup[a.lookup] = a.id
+    
+    # player_achievements = {}
+    # for a in config['DBSession'].query(Achievement).filter(Achievement.item.in_(achievement_types), Achievement.user == user_id):
+    #     player_achievements[a.item] = a
+    
+    # complete, partial, not_started = [], [], []
+    # for a in [lookup[a] for a in achievement_names]:
+    #     if a in player_achievements:
+    #         if player_achievements[a].activation_count >= achievement_types[a].activation_count:
+    #             complete.append(a)
+    #         else:
+    #             partial.append(a)
+    #     else:
+    #         not_started.append(a)
+    
+    return dict(
+        title           = "Achievements for {}".format(player_name),
+        player_name     = player_name,
+        layout          = layout,
+        the_sub_category = the_sub_category,
+        user_id         = user_id,
+        achievements    = achievements,
     )
 
 @view_config(route_name='achievements.search', renderer='../templates/user/search.pt', permission='achievements')
@@ -73,70 +192,6 @@ def achievements_search(request):
         title  = "Achievements: Player search",
         layout = layout,
         message = message,
-    )
-
-@view_config(route_name='achievements.category', renderer='../templates/user/category.pt', permission='achievements')
-def achievements_category(request):
-    layout = get_renderer(config['layout']).implementation()
-    
-    user_id      = int(request.matchdict['user_id'])
-    category = request.matchdict['category']
-    
-    return dict(
-        title  = "%s achievements" % category,
-        layout = layout,
-        category = achievement_functions.sections[category],
-        user_id = user_id,
-        sub_categories = achievement_functions.sections[category]['sub_categories'],
-    )
-
-@view_config(route_name='achievements.sub_category', renderer='../templates/user/sub_category.pt', permission='achievements')
-def achievements_sub_category(request):
-    layout = get_renderer(config['layout']).implementation()
-    
-    user_id      = int(request.matchdict['user_id'])
-    category     = request.matchdict['category']
-    sub_category = request.matchdict['sub_category']
-    
-    # I wanted to use something like this but I couldn't get the outer-join to work correctly :(
-    # achievement_list = config['DBSession'].query(AchievementType, Achievement).outerjoin(
-    #     Achievement, Achievement.item == AchievementType.id
-    # ).filter(
-    #     AchievementType.lookup.in_(achievement_names),
-    #     Achievement.user == request.user.id,
-    # )
-    
-    achievement_names = achievement_functions.sections[category]['sub_categories'][sub_category]['achievements']
-    
-    achievement_types = {}
-    lookup = {}
-    for a in config['DBSession'].query(AchievementType).filter(AchievementType.lookup.in_(achievement_names)):
-        achievement_types[a.id] = a
-        lookup[a.lookup] = a.id
-    
-    player_achievements = {}
-    for a in config['DBSession'].query(Achievement).filter(Achievement.item.in_(achievement_types), Achievement.user == user_id):
-        player_achievements[a.item] = a
-    
-    complete, partial, not_started = [], [], []
-    for a in [lookup[a] for a in achievement_names]:
-        if a in player_achievements:
-            if player_achievements[a].activation_count >= achievement_types[a].activation_count:
-                complete.append(a)
-            else:
-                partial.append(a)
-        else:
-            not_started.append(a)
-    
-    return dict(
-        title  = "%s achievements" % achievement_functions.sections[category]['sub_categories'][sub_category]['name'],
-        layout = layout,
-        category = achievement_functions.sections[category],
-        sub_category = achievement_functions.sections[category]['sub_categories'][sub_category],
-        user_id = user_id,
-        achievement_list = complete + partial + not_started,
-        achievement_types = achievement_types,
-        player_achievements = player_achievements,
     )
 
 @view_config(route_name='achievements.showcase_popup', renderer='../templates/user/showcase_popup.pt', permission='achievements')
