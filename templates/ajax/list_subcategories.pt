@@ -14,7 +14,7 @@
 <table border="0" cellspacing="0" style="width:100%; border-left: 1px solid #666; margin-left:10px;">
     <tr>
         <td class="button_cell">
-            <a href="${request.route_url('achievements.admin.achievement_type.add')}?subcategory=${category_id}" class="inbutton">Add subcategory</a>
+            <a href="${request.route_url('achievements.admin.subcategory.add')}?category=${category_id}" class="inbutton">Add subcategory</a>
         </td>
     </tr>
 </table>

@@ -24,8 +24,6 @@
                 });
             </script>
             
-            <input type="hidden" name="subcategory_id" id="subcategory_id" value="${the_achievement_type.id}" />
-            
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
                     <td><label for="name">Achievement type name:</label></td>
@@ -90,7 +88,7 @@
                         <a class="button" href="${request.route_url('achievements.admin.achievement_type.add')}?subcategory=${the_achievement_type.subcategory}">Create New Type</a>
                     </td>
                     <td>
-                        <a tal:condition="the_achievement_type != None and the_achievement_type.id != -1" class="button red_button" href="${request.route_url('achievements.admin.achievement_type.delete', achievement_type_id=the_achievement_type.id)}">Delete Achievement type</a>
+                        <a tal:condition="the_achievement_type != None and the_achievement_type.id != -1" class="button red_button" href="${request.route_url('achievements.admin.achievement_type.delete', achievement_type_id=the_achievement_type.id)}">Delete Achievement Type</a>
                         &nbsp;
                     </td>
                 </tr>

@@ -47,6 +47,11 @@
                         <input type="checkbox" id="private" name="private" tal:attributes="checked the_subcategory.private"/>
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="7"><label for="description">Description:</label>
+                    <textarea name="description" id="description" rows="8" style="width:100%;">${the_subcategory.description}</textarea>
+                    </td>
+                </tr>
             </table>
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>

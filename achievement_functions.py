@@ -1,8 +1,43 @@
 import datetime
-from .achievement_models import AchievementType, Achievement
+from .achievement_models import (
+    AchievementSection,
+    AchievementCategory,
+    AchievementSubCategory,
+    AchievementType,
+    Achievement,
+)
 import transaction
-from collections import OrderedDict
 from .config import config
+
+def editors_for_achievement(the_achievement_type):
+    editors = config['DBSession'].query(AchievementSection.editors).filter(
+        AchievementSubCategory.id == the_achievement_type.subcategory,
+        AchievementCategory.id == AchievementSubCategory.category,
+        AchievementSection.id == AchievementCategory.section
+    ).first()
+    
+    if editors == None:
+        return []
+    return editors[0]
+
+def editors_for_subcategory(the_subcategory):
+    editors = config['DBSession'].query(AchievementSection.editors).filter(
+        AchievementCategory.id == the_subcategory.category,
+        AchievementSection.id == AchievementCategory.section
+    ).first()
+    
+    if editors == None:
+        return []
+    return editors[0]
+
+def editors_for_category(the_category):
+    editors = config['DBSession'].query(AchievementSection.editors).filter(
+        AchievementSection.id == the_category.section
+    ).first()
+    
+    if editors == None:
+        return []
+    return editors[0]
 
 def register(achievement_list):
     """Takes a list of achievement type (or dict) and ensures they exist

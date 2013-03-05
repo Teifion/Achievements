@@ -9,12 +9,7 @@
             <div class="error">
                 ${message}
             </div>
-            <table border="0" cellspacing="0" cellpadding="5">
-                <tr>
-                    <td><a class="button" href="${request.route_url('my_docs')}">My documents</a></td>
-                    <td><a class="button" href="${request.route_url('create_doc')}">Create New Doc</a></td>
-                </tr>
-            </table>
+            <a class="inbutton" href="${request.route_url('achievements.dev')}">Dev home</a>
         </div>
         
         <form tal:condition="the_section != None and the_section.name != ''" action="${request.route_url('achievements.dev.section.delete', section_id=the_section.id)}" method="post" accept-charset="utf-8" style="padding:10px;">

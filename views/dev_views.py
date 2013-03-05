@@ -2,7 +2,7 @@ from pyramid.view import view_config
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import get_renderer
-
+from sqlalchemy import func
 import datetime
 import transaction
 
@@ -14,6 +14,7 @@ from ..achievement_models import (
     AchievementType,
     Achievement,
     AchievementShowcase,
+    AchievementCategory,
 )
 
 @view_config(route_name='achievements.dev', renderer='../templates/dev/home.pt', permission='achievements_dev')
@@ -59,8 +60,9 @@ def edit_section(request):
             the_section.owner = the_user.id
     
     if 'form.submitted' in request.params:
-        the_section.name    = request.params['name'].strip()
-        the_section.private = "private" in request.params
+        the_section.name        = request.params['name'].strip()
+        the_section.description = request.params['description'].strip()
+        the_section.private     = "private" in request.params
         
         # Convert editor names into user_ids
         editor_names = []
@@ -109,6 +111,18 @@ def delete_section(request):
     section_id = int(request.matchdict['section_id'])
     the_section = config['DBSession'].query(AchievementSection).filter(AchievementSection.id == section_id).first()
     the_user = config['get_user'](request)
+    
+    category_count = config['DBSession'].query(func.count(AchievementCategory.id)).filter(AchievementCategory.section == section_id).first()[0]
+    
+    if category_count > 0:
+        layout = get_renderer(config['layout']).implementation()
+        
+        return dict(
+            title       = 'Delete section: %s' % the_section.name,
+            the_section = None,
+            message     = "This section still has sub categories. You cannot delete it until they are gone.",
+            layout      = layout,
+        )
     
     if the_section.owner != the_user.id:
         layout = get_renderer('../templates/layouts/viewer.pt').implementation()

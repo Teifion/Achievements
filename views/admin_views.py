@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import get_renderer
 import datetime
 
+from sqlalchemy import func
 import transaction
 from .. import achievement_functions
 from ..config import config
@@ -15,6 +16,7 @@ from ..achievement_models import (
     AchievementCategory,
     AchievementSubCategory,
     AchievementType,
+    Achievement,
 )
 
 @view_config(route_name='achievements.admin', renderer='../templates/admin/home.pt', permission='achievements_admin')
@@ -60,6 +62,7 @@ def edit_category(request):
     
     if 'form.submitted' in request.params:
         the_category.name    = request.params['name'].strip()
+        the_category.description = request.params['description'].strip()
         the_category.section = int(request.params['section'])
         # TODO check editor permissions within this section before adding it to it
         the_category.private = "private" in request.params
@@ -97,14 +100,27 @@ def delete_category(request):
     the_category = config['DBSession'].query(AchievementCategory).filter(AchievementCategory.id == category_id).first()
     the_user = config['get_user'](request)
     
-    if the_category.owner != the_user.id:
-        layout = get_renderer('../templates/layouts/viewer.pt').implementation()
+    type_count = config['DBSession'].query(func.count(AchievementSubCategory.id)).filter(AchievementSubCategory.category == category_id).first()[0]
+    
+    if type_count > 0:
+        layout = get_renderer(config['layout']).implementation()
         
         return dict(
-            title       = 'Edit section: %s' % the_category.name,
+            title           = 'Delete category: %s' % the_category.name,
             the_category = None,
-            message     = "Only the owner can delete a section",
-            layout      = layout,
+            message         = "This category still has sub categories. You cannot delete it until they are gone.",
+            layout          = layout,
+        )
+    
+    editors = achievement_functions.editors_for_category(the_category)
+    if the_user.id not in editors:
+        layout = get_renderer(config['layout']).implementation()
+        
+        return dict(
+            title                = 'Delete sub category: %s' % the_category.name,
+            the_category = None,
+            message              = "You are not authorised to delete sub categories in this section",
+            layout               = layout,
         )
     
     if 'form.submitted' in request.params:
@@ -118,8 +134,8 @@ def delete_category(request):
     layout = get_renderer(config['layout']).implementation()
     
     return dict(
-        title        = 'Delete category: %s' % the_category.name if the_category != None else "Category deleted",
-        layout       = layout,
+        title           = 'Delete sub category: %s' % the_category.name if the_category != None else "Sub category deleted",
+        layout          = layout,
         the_category = the_category,
     )
 
@@ -152,6 +168,7 @@ def edit_subcategory(request):
     
     if 'form.submitted' in request.params:
         the_subcategory.name     = request.params['name'].strip()
+        the_subcategory.description = request.params['description'].strip()
         the_subcategory.category = int(request.params['category'])
         
         # TODO check editor permissions within this category before adding it to it
@@ -194,14 +211,27 @@ def delete_subcategory(request):
     the_subcategory = config['DBSession'].query(AchievementSubCategory).filter(AchievementSubCategory.id == subcategory_id).first()
     the_user = config['get_user'](request)
     
-    if the_subcategory.owner != the_user.id:
-        layout = get_renderer('../templates/layouts/viewer.pt').implementation()
+    type_count = config['DBSession'].query(func.count(AchievementType.id)).filter(AchievementType.subcategory == subcategory_id).first()[0]
+    
+    if type_count > 0:
+        layout = get_renderer(config['layout']).implementation()
         
         return dict(
-            title       = 'Edit section: %s' % the_subcategory.name,
+            title           = 'Delete sub category: %s' % the_subcategory.name,
             the_subcategory = None,
-            message     = "Only the owner can delete a section",
-            layout      = layout,
+            message         = "This subcategory still has achievements in it. You cannot delete it until they are gone.",
+            layout          = layout,
+        )
+    
+    editors = achievement_functions.editors_for_subcategory(the_subcategory)
+    if the_user.id not in editors:
+        layout = get_renderer(config['layout']).implementation()
+        
+        return dict(
+            title                = 'Delete sub category: %s' % the_subcategory.name,
+            the_subcategory = None,
+            message              = "You are not authorised to delete sub categories in this section",
+            layout               = layout,
         )
     
     if 'form.submitted' in request.params:
@@ -215,9 +245,9 @@ def delete_subcategory(request):
     layout = get_renderer(config['layout']).implementation()
     
     return dict(
-        title        = 'Delete document: %s' % the_subcategory.name if the_subcategory != None else "Doc deleted",
-        layout       = layout,
-        the_subcategory      = the_subcategory,
+        title           = 'Delete sub category: %s' % the_subcategory.name if the_subcategory != None else "Sub category deleted",
+        layout          = layout,
+        the_subcategory = the_subcategory,
     )
 
 @view_config(route_name='achievements.admin.achievement_type.add', renderer='../templates/admin/edit_achievement_type.pt', permission='achievements_admin')
@@ -251,12 +281,19 @@ def edit_achievement_type(request):
         the_achievement_type.name             = request.params['name'].strip()
         the_achievement_type.label            = request.params['label'].strip()
         the_achievement_type.lookup           = request.params['lookup'].strip()
-        if the_achievement_type.lookup == "":
-            the_achievement_type.lookup = None
         
         the_achievement_type.description      = request.params['description'].strip()
-        the_achievement_type.points           = int(request.params['points'])
-        the_achievement_type.activation_count = int(request.params['activation_count'])
+        
+        try:
+            the_achievement_type.points           = int(request.params['points'])
+        except Exception:
+            the_achievement_type.points = 0
+            
+        try:
+            the_achievement_type.activation_count = int(request.params['activation_count'])
+        except Exception:
+            the_achievement_type.activation_count = 0
+        
         the_achievement_type.private = "private" in request.params
         
         the_achievement_type.subcategory         = int(request.params['subcategory'])
@@ -280,7 +317,7 @@ def edit_achievement_type(request):
     )
     for sc, c, s in config['DBSession'].query(AchievementSubCategory, AchievementCategory, AchievementSection).filter(*filters).order_by(AchievementSection.name.asc(), AchievementCategory.name.asc()):
         subcategories.append("<option value='{}' {}>{} {}: {}</option>".format(
-            c.id,
+            sc.id,
             "selected='selected'" if c.id == int(request.params.get("category", -1)) else "",
             s.name, c.name, sc.name
         ))
@@ -300,18 +337,20 @@ def delete_achievement_type(request):
     the_achievement_type = config['DBSession'].query(AchievementType).filter(AchievementType.id == achievement_type_id).first()
     the_user = config['get_user'](request)
     
-    if the_achievement_type.owner != the_user.id:
-        layout = get_renderer('../templates/layouts/viewer.pt').implementation()
+    editors = achievement_functions.editors_for_achievement(the_achievement_type)
+    if the_user.id not in editors:
+        layout = get_renderer(config['layout']).implementation()
         
         return dict(
-            title       = 'Edit section: %s' % the_achievement_type.name,
+            title                = 'Delete achievement type: %s' % the_achievement_type.name,
             the_achievement_type = None,
-            message     = "Only the owner can delete a section",
-            layout      = layout,
+            message              = "You are not authorised to delete achievement types in this section",
+            layout               = layout,
         )
     
     if 'form.submitted' in request.params:
         with transaction.manager:
+            config['DBSession'].query(Achievement).filter(Achievement.item == achievement_type_id).delete()
             config['DBSession'].delete(the_achievement_type)
         
         the_achievement_type = AchievementType()
@@ -321,7 +360,7 @@ def delete_achievement_type(request):
     layout = get_renderer(config['layout']).implementation()
     
     return dict(
-        title        = 'Delete document: %s' % the_achievement_type.name if the_achievement_type != None else "Doc deleted",
-        layout       = layout,
-        the_achievement_type      = the_achievement_type,
+        title                = 'Delete achievement type: %s' % the_achievement_type.name if the_achievement_type != None else "Achievement type deleted",
+        layout               = layout,
+        the_achievement_type = the_achievement_type,
     )

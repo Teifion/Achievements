@@ -70,11 +70,12 @@ class AchievementType(Base):
     
     # Information about the achievement and how to achieve it. We're putting it
     # as text just incase we want to use a long piece of text
-    description   = Column(Text, nullable=False)
+    description   = Column(Text, nullable=False, default="")
     
-    points        = Column(Integer, nullable=False)
+    points        = Column(Integer, nullable=False, default=0)
     
     # How many times must you do something to get the achievement?
+    # If set to -1 then it can be achieved multiple times
     activation_count = Column(Integer, nullable=False, default=0)
     
     # Can't be found by searching, only show if they have the achievement
