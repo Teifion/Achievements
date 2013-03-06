@@ -5,6 +5,23 @@
     </div>
     
     <div metal:fill-slot="content">
+        <div style="float:right; text-align:right;">
+            <form action="${request.route_url('achievements.admin.user_search')}" method="post" accept-charset="utf-8">
+                <input name="search_terms" id="user_search" type="text" value="" style="display:inline-block;">
+                <input type="submit" name="form.submitted" id="form.submitted" value="Search users" class="inbutton" />
+            </form>
+            <br />
+            
+            <form action="${request.route_url('achievements.admin.achievement_type.overview')}" method="post" accept-charset="utf-8">
+                <select name="atype" id="achievement_type_list" style="width:auto;">
+                    <option value="1">A</option>
+                    <option value="2">B</option>
+                    <option value="3">C</option>
+                </select>
+                <input type="submit" name="form.submitted" id="form.submitted" value="Type overview" class="inbutton" />
+            </form>
+        </div>
+        
         <a href="${request.route_url('achievements.admin.category.add')}" class="inbutton">Add category</a>
         <a href="${request.route_url('achievements.admin.subcategory.add')}" class="inbutton">Add sub category</a>
         <a href="${request.route_url('achievements.admin.achievement_type.add')}" class="inbutton">Add achievement type</a>

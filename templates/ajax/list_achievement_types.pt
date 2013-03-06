@@ -3,6 +3,7 @@
         <td><strong>${at.name}</strong></td>
         
         <td class="button_cell" style="width:60px;"><a href="${request.route_url('achievements.admin.achievement_type.edit', achievement_type_id=at.id)}" class="inbutton">Edit</a></td>
+        <td class="button_cell" style="width:60px;"><a href="${request.route_url('achievements.admin.achievement_type.overview')}?atype=${at.id}" class="inbutton">Overview</a></td>
         <td class="button_cell" style="width:30px;"><a href="${request.route_url('achievements.admin.achievement_type.delete', achievement_type_id=at.id)}" class="inbutton red_button">X</a></td>
     </tr>
 </table>

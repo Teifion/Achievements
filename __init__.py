@@ -25,6 +25,11 @@ def add_views(config):
     config.add_route('achievements.admin.achievement_type.add', '/achievements/admin/achievement_type/add')
     config.add_route('achievements.admin.achievement_type.edit', '/achievements/admin/achievement_type/edit/{achievement_type_id}')
     config.add_route('achievements.admin.achievement_type.delete', '/achievements/admin/achievement_type/delete/{achievement_type_id}')
+    config.add_route('achievements.admin.achievement_type.overview', '/achievements/admin/achievement_type/overview')
+    
+    config.add_route('achievements.admin.user', '/achievements/admin/user/{user_id}')
+    config.add_route('achievements.admin.user_search', '/achievements/admin/search')
+    config.add_route('achievements.admin.achievement.edit', '/achievements/achievement/edit/{achievement_id}')
     
     config.add_route('achievements.admin', '/achievements/admin')
     
