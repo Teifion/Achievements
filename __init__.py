@@ -30,6 +30,7 @@ def add_views(config):
     config.add_route('achievements.admin.user', '/achievements/admin/user/{user_id}')
     config.add_route('achievements.admin.user_search', '/achievements/admin/search')
     config.add_route('achievements.admin.achievement.edit', '/achievements/achievement/edit/{achievement_id}')
+    config.add_route('achievements.admin.achievement.add', '/achievements/achievement/add')
     
     config.add_route('achievements.admin', '/achievements/admin')
     

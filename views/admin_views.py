@@ -27,10 +27,30 @@ def admin_home(request):
     where = "{:d} = ANY (achievement_sections.editors)".format(the_user.id)
     sections = config['DBSession'].query(AchievementSection).filter(where).order_by(AchievementSection.name.asc())
     
+    filters = (
+        AchievementType.subcategory == AchievementSubCategory.id,
+        AchievementSubCategory.category == AchievementCategory.id,
+        AchievementCategory.section == AchievementSection.id,
+        "{:d} = ANY(achievement_sections.editors)".format(the_user.id),
+    )
+    
+    orders = (
+        AchievementSection.name.asc(),
+        AchievementCategory.name.asc(),
+        AchievementSubCategory.name.asc(),
+        AchievementType.name.asc(),
+    )
+    
+    achievement_list = []
+    for a in config['DBSession'].query(AchievementType.id, AchievementSection.name, AchievementCategory.name, AchievementSubCategory.name, AchievementType.name).filter(*filters).order_by(*orders):
+        
+        achievement_list.append('<option value="{}">{} {} {} {}</option>'.format(*a))
+    
     return dict(
         title  = "Achievements Admin Home",
         layout = layout,
         sections = list(sections),
+        achievement_list = "".join(achievement_list),
     )
 
 @view_config(route_name='achievements.admin.category.add', renderer='../templates/admin/edit_category.pt', permission='achievements_admin')
@@ -363,4 +383,163 @@ def delete_achievement_type(request):
         title                = 'Delete achievement type: %s' % the_achievement_type.name if the_achievement_type != None else "Achievement type deleted",
         layout               = layout,
         the_achievement_type = the_achievement_type,
+    )
+
+@view_config(route_name='achievements.admin.achievement_type.overview', renderer='../templates/admin/achievement_type_overview.pt', permission='achievements_admin')
+def achievement_type_overview(request):
+    achievement_type_id = int(request.params['atype'])
+    the_achievement_type = config['DBSession'].query(AchievementType).filter(AchievementType.id == achievement_type_id).first()
+    # the_user = config['get_user'](request)
+    
+    attrs = (
+        getattr(config['User'], config['user.id_property']),
+        getattr(config['User'], config['user.name_property'])
+    )
+    
+    instances = config['DBSession'].query(Achievement, *attrs).filter(Achievement.item == achievement_type_id, attrs[0] == Achievement.user).order_by(attrs[1].asc())
+    
+    layout = get_renderer(config['layout']).implementation()
+    
+    return dict(
+        title                = '%s overview' % the_achievement_type.name,
+        layout               = layout,
+        instances            = instances,
+        the_achievement_type = the_achievement_type,
+    )
+
+@view_config(route_name='achievements.admin.user_search', permission='achievements_admin')
+def user_search(request):
+    search_terms = request.params['search_terms'].upper()
+    
+    # "(LOWER(users.name) LIKE '%{0}%' OR LOWER(users.actual_name) LIKE '%{0}%' OR payroll = '{0}')".format(search_terms.replace("'", "''").lower()))
+    
+    attrs = (
+        getattr(config['User'], config['user.id_property']),
+        getattr(config['User'], config['user.name_property'])
+    )
+    
+    the_user = config['DBSession'].query(attrs[0]).filter(attrs[1].like(search_terms)).first()
+    
+    if the_user == None:
+        return HTTPFound(location = request.route_url('achievements.admin'))
+    else:
+        return HTTPFound(location = request.route_url('achievements.admin.user', user_id=the_user[0]))
+
+@view_config(route_name='achievements.admin.user', renderer='../templates/admin/user.pt',permission='achievements_admin')
+def view_user(request):
+    user_id = int(request.matchdict['user_id'])
+    attrs = (
+        getattr(config['User'], config['user.id_property']),
+        getattr(config['User'], config['user.name_property'])
+    )
+    
+    the_user = config['DBSession'].query(*attrs).filter(attrs[0] == user_id).first()
+    
+    filters = (
+        Achievement.item == AchievementType.id,
+        Achievement.user == the_user.id,
+    )
+    
+    # Run two queries so we can sort the way we want
+    achievements = list(config['DBSession'].query(AchievementType, Achievement).filter(Achievement.awarded != None, *filters).order_by(Achievement.awarded.desc())
+    ) + list(config['DBSession'].query(AchievementType, Achievement).filter(Achievement.awarded == None, *filters).order_by(Achievement.activation_count.asc()))
+    
+    layout = get_renderer(config['layout']).implementation()
+    
+    return dict(
+        title        = '%s achievements' % the_user.name,
+        layout       = layout,
+        the_user     = the_user,
+        achievements = achievements,
+    )
+
+@view_config(route_name='achievements.admin.achievement.add', renderer='../templates/admin/edit_achievement.pt', permission='achievements_admin')
+@view_config(route_name='achievements.admin.achievement.edit', renderer='../templates/admin/edit_achievement.pt', permission='achievements_admin')
+def edit_achievement(request):
+    layout = get_renderer(config['layout']).implementation()
+    message = ""
+    flash_colour = "0A0"
+    request_user = config['get_user'](request)
+    
+    # These are used to reference user properties
+    # attrs = (
+    #     getattr(config['User'], config['user.id_property']),
+    #     getattr(config['User'], config['user.name_property'])
+    # )
+    
+    # No submission, we need to grab the existing section
+    if "achievement_id" not in request.matchdict:
+        the_achievement                  = Achievement()
+        the_achievement.user             = int(request.params['user'])
+        the_achievement.id               = -1
+        the_achievement.awarded          = datetime.datetime.now()
+        the_achievement.awarder          = request_user.id
+        the_achievement.activation_count = 0
+        
+    else:
+        achievement_id = int(request.matchdict['achievement_id'])
+        if achievement_id > 0:
+            the_achievement = config['DBSession'].query(AchievementType).filter(AchievementType.id == achievement_id).first()
+            
+        else:
+            the_achievement        = AchievementType()
+    
+    if 'form.submitted' in request.params:
+        the_achievement.name             = request.params['name'].strip()
+        the_achievement.label            = request.params['label'].strip()
+        the_achievement.lookup           = request.params['lookup'].strip()
+        
+        the_achievement.description      = request.params['description'].strip()
+        
+        try:
+            the_achievement.points           = int(request.params['points'])
+        except Exception:
+            the_achievement.points = 0
+            
+        try:
+            the_achievement.activation_count = int(request.params['activation_count'])
+        except Exception:
+            the_achievement.activation_count = 0
+        
+        the_achievement.private = "private" in request.params
+        
+        the_achievement.subcategory         = int(request.params['subcategory'])
+        # TODO check editor permissions within this subcategory before adding it to it
+        
+        config['DBSession'].add(the_achievement)
+        
+        message = "Changes saved at %s" % datetime.datetime.now().strftime("%H:%M, on %d of %B")
+        
+        if the_achievement.id in (None, -1):
+            the_achievement.id = config['DBSession'].query(AchievementType.id).filter(AchievementType.name == the_achievement.name).order_by(AchievementType.id.desc()).first()[0]
+            
+            return HTTPFound(location = request.route_url('achievements.admin.achievement_type.edit', achievement_id=the_achievement.id))
+    
+    filters = (
+        AchievementType.subcategory == AchievementSubCategory.id,
+        AchievementSubCategory.category == AchievementCategory.id,
+        AchievementCategory.section == AchievementSection.id,
+        "{:d} = ANY(achievement_sections.editors)".format(request_user.id),
+    )
+    
+    orders = (
+        AchievementSection.name.asc(),
+        AchievementCategory.name.asc(),
+        AchievementSubCategory.name.asc(),
+        AchievementType.name.asc(),
+    )
+    
+    achievement_list = []
+    if the_achievement.item > 0:
+        for a in config['DBSession'].query(AchievementType.id, AchievementSection.name, AchievementCategory.name, AchievementSubCategory.name, AchievementType.name).filter(*filters).order_by(*orders):
+            
+            achievement_list.append('<option value="{}">{} {} {} {}</option>'.format(*a))
+    
+    return dict(
+        title           = 'Edit achievement',
+        layout          = layout,
+        the_achievement = the_achievement,
+        message         = message,
+        flash_colour    = flash_colour,
+        achievement_list   = "".join(achievement_list),
     )

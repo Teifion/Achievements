@@ -1,7 +1,8 @@
 <div metal:use-macro="layout">
     <div metal:fill-slot="header_buttons" style="display:inline-block;">
         <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
-        <a href="${request.route_url('achievements.dev')}" class="inbutton">Dev</a>
+        <a href="${request.route_url('achievements.admin')}" class="inbutton">Admin</a>
+        <a href="${request.route_url('achievements.dev')}" tal:condition="'achievements_dev' in request.user.permissions()" class="inbutton">Dev</a>
     </div>
     
     <div metal:fill-slot="content">

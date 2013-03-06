@@ -112,7 +112,7 @@
                     <img src="${request.static_url('dashboard:static/images/achievements/{}_thumb.png'.format(a[1].lookup))}" width="75" height="75"/>
                 </div>
                 <strong>${a[1].name} (${a[1].points})</strong><br />
-                ${a[0].first_awarded.strftime("%d/%m/%Y")}
+                ${a[0].awarded.strftime("%d/%m/%Y")}
             </div>
         </div>
         

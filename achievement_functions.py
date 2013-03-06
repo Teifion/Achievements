@@ -71,15 +71,14 @@ def give_achievement(achievement_lookup, user_id, acount=1):
         the_achievement.user             = user_id
         the_achievement.item             = the_item.id
         the_achievement.activation_count = 0
-        the_achievement.first_awarded    = None
-        the_achievement.last_awarded     = None
+        the_achievement.awarded    = None
     
     # No reason to stop counting just because we've achievemed the thing once
     origional_count = the_achievement.activation_count
     the_achievement.activation_count += acount
     
     # It's been awarded, we need to see if they "achieve" it again and thus refresh the expiration date
-    if the_achievement.first_awarded != None:
+    if the_achievement.awarded != None:
         amount_over_target = origional_count % the_item.activation_count
         
         # Take the amount we were over the actviation target and add the new extra
@@ -93,9 +92,8 @@ def give_achievement(achievement_lookup, user_id, acount=1):
                 the_achievement.expires = the_achievement.last_awarded + the_item.duration
     
     # Not awarded yet, now we award it
-    if the_achievement.activation_count >= the_item.activation_count and the_achievement.first_awarded == None:
-        the_achievement.first_awarded = datetime.datetime.now()
-        the_achievement.last_awarded = datetime.datetime.now()
+    if the_achievement.activation_count >= the_item.activation_count and the_achievement.awarded == None:
+        the_achievement.awarded = datetime.datetime.now()
         
         if the_item.duration != None:
             the_achievement.expires = the_achievement.last_awarded + the_item.duration

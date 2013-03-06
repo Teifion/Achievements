@@ -1,0 +1,80 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.admin')}" class="inbutton">Admin</a>
+        <a href="${request.route_url('achievements.dev')}" tal:condition="'achievements_dev' in request.user.permissions()" class="inbutton">Dev</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        <form tal:condition="the_achievement != None" action="${request.route_url('achievements.admin.achievement.edit', achievement_id=the_achievement.id)}" method="post" accept-charset="utf-8" style="padding:10px;">
+            <div tal:condition="message != ''" id="flash_update" style="border: 1px solid #AAA; margin:10px; padding:10px; text-align:center;">
+                ${message}
+                
+                <script type="text/javascript" charset="utf-8">
+                    $(document).ready(function() {
+                        $('#flash_update').show();
+                        $('#flash_update').animate({ backgroundColor: "#${flash_colour}" }, 500);
+                        $('#flash_update').animate({ backgroundColor: "#FFF" }, 1500);
+                    });
+                </script>
+            </div>
+            <script src="${request.static_url('dashboard:static/jqueryui/jquery.ui.timepicker.js')}" type="text/javascript" charset="utf-8"></script>
+            
+            <script type="text/javascript" charset="utf-8">    
+                $(document).ready(function() {
+                    $('#user').focus();
+                    
+                    $("#awarded").datepicker({
+                        showButtonPanel: true,
+                        dateFormat: "dd/mm/yy",
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
+                    $('#awarded_time').timepicker();
+                });
+            </script>
+            
+            <table border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td><label for="user">User:</label></td>
+                    <td><input type="text" name="user" id="user" value="${the_achievement.user}" size="5"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="item">Item:</label></td>
+                    <td>
+                        <select name="item" id="item" tal:condition="type(achievement_list) == str">
+                            ${structure:achievement_list}
+                        </select>
+                        <input type="text" name="item" id="item" value="${achievement_list[0]}" tal:condition="type(achievement_list) == list" />
+                    </td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="awarder">Awarder:</label></td>
+                    <td><input type="text" disabled="disabled" name="awarder" id="awarder" value="${the_achievement.awarder}" size="5"/></td>
+                </tr>
+                <tr>
+                    <td><label for="awarded">Awarded:</label></td>
+                    <td><input type="text" name="awarded" id="awarded" value="${the_achievement.awarded.strftime('%d/%m/%Y')}"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="awarded_time">At:</label></td>
+                    <td><input type="text" name="awarded_time" id="awarded_time" value="${the_achievement.awarded.strftime('%H:%M')}"/></td>
+                    
+                    <td style="width:5x;">&nbsp;</td>
+                    
+                    <td><label for="activation_count">Activation count:</label></td>
+                    <td><input type="text" name="activation_count" id="activation_count" value="${the_achievement.activation_count}" size="5"/></td>
+                </tr>
+            </table>
+            <table border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
+                </tr>
+            </table>
+        </form>
+        
+    </div>
+</div>

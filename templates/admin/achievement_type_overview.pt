@@ -1,0 +1,24 @@
+<div metal:use-macro="layout">
+    <div metal:fill-slot="header_buttons" style="display:inline-block;">
+        <a href="${request.route_url('achievements.dashboard')}" class="inbutton">Achievements dashboard</a>
+        <a href="${request.route_url('achievements.admin')}" class="inbutton">Admin</a>
+        <a href="${request.route_url('achievements.dev')}" tal:condition="'achievements_dev' in request.user.permissions()" class="inbutton">Dev</a>
+    </div>
+    
+    <div metal:fill-slot="content">
+        
+        <table border="0" cellspacing="0" cellpadding="5">
+            <tr class="row2">
+                <th>User</th>
+                <th>Achieved</th>
+                <th>Completion</th>
+            </tr>
+            <tr tal:repeat="i instances" tal:attributes="class 'row%s' % (repeat.i.index%2)">
+                <td>${i[2]}</td>
+                <td>${i[0].awarded.strftime("%d/%m/%Y %H:%M") if i[0].awarded != None else ""}</td>
+                <td>${i[0].activation_count}/${the_achievement_type.activation_count}</td>
+            </tr>
+        </table>
+        
+    </div>
+</div>

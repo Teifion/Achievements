@@ -43,7 +43,7 @@ def achievement_dashboard(request):
     while len(showcase) < 5:
         showcase.append(None)
     
-    recents = config['DBSession'].query(Achievement, AchievementType).filter(Achievement.user == user_id, Achievement.item == AchievementType.id, Achievement.first_awarded != None).order_by(Achievement.first_awarded.desc()).limit(5)
+    recents = config['DBSession'].query(Achievement, AchievementType).filter(Achievement.user == user_id, Achievement.item == AchievementType.id, Achievement.awarded != None).order_by(Achievement.awarded.desc()).limit(5)
     
     # The sections to list
     sections = config['DBSession'].query(AchievementSection).order_by(AchievementSection.name.asc())
@@ -128,7 +128,7 @@ def achievements_sub_category(request):
     sub_category_id = int(request.matchdict['subcategory_id'])
     the_sub_category = config['DBSession'].query(AchievementSubCategory).filter(AchievementSubCategory.id == sub_category_id).first()
     
-    # SELECT achievement_types.name, achievements.first_awarded FROM achievement_types
+    # SELECT achievement_types.name, achievements.awarded FROM achievement_types
     #     LEFT OUTER JOIN achievements ON (achievement_types.id = achievements.item AND achievements.user = 1)
     # WHERE achievement_types.subcategory = 1
     # ORDER BY achievement_types.id ASC

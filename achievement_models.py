@@ -94,9 +94,8 @@ class Achievement(Base):
     item          = Column(Integer, ForeignKey("achievement_types.id"), nullable=False)
     
     # Is null until actually awarded
-    first_awarded = Column(DateTime, nullable=True)
-    last_awarded  = Column(DateTime, nullable=True)
-    expires       = Column(DateTime, nullable=True)
+    awarded = Column(DateTime, nullable=True)
+    awarder = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     activation_count = Column(Integer, nullable=False, default=0)
 
