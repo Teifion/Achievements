@@ -37,7 +37,7 @@
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
                     <td><label for="user">User:</label></td>
-                    <td><input type="text" name="user" id="user" value="${the_achievement.user}" size="5"/></td>
+                    <td><input type="text" name="user" id="user" value="${username}" /></td>
                     
                     <td style="width:5x;">&nbsp;</td>
                     
@@ -46,13 +46,13 @@
                         <select name="item" id="item" tal:condition="type(achievement_list) == str">
                             ${structure:achievement_list}
                         </select>
-                        <input type="text" name="item" id="item" value="${achievement_list[0]}" tal:condition="type(achievement_list) == list" />
+                        <input type="text" id="item" value="${achievement_list[0]}" tal:condition="type(achievement_list) == list" disabled="disabled" />
                     </td>
                     
                     <td style="width:5x;">&nbsp;</td>
                     
                     <td><label for="awarder">Awarder:</label></td>
-                    <td><input type="text" disabled="disabled" name="awarder" id="awarder" value="${the_achievement.awarder}" size="5"/></td>
+                    <td><input type="text" disabled="disabled" id="awarder" value="${awarder_name}" /></td>
                 </tr>
                 <tr>
                     <td><label for="awarded">Awarded:</label></td>
