@@ -72,6 +72,10 @@
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
                     <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
+                    <td>
+                        <a tal:condition="the_achievement != None and the_achievement.id != -1" class="button red_button" href="${request.route_url('achievements.admin.achievement.delete', achievement_id=the_achievement.id)}">Delete Achievement</a>
+                        &nbsp;
+                    </td>
                 </tr>
             </table>
         </form>

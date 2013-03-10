@@ -441,8 +441,7 @@ def view_user(request):
     )
     
     # Run two queries so we can sort the way we want
-    achievements = list(config['DBSession'].query(AchievementType, Achievement).filter(Achievement.awarded != None, *filters).order_by(Achievement.awarded.desc())
-    ) + list(config['DBSession'].query(AchievementType, Achievement).filter(Achievement.awarded == None, *filters).order_by(Achievement.activation_count.asc()))
+    achievements = list(config['DBSession'].query(AchievementType, Achievement).filter(Achievement.awarded != None, *filters).order_by(Achievement.awarded.desc())) + list(config['DBSession'].query(AchievementType, Achievement).filter(Achievement.awarded == None, *filters).order_by(Achievement.activation_count.asc()))
     
     layout = get_renderer(config['layout']).implementation()
     
@@ -571,4 +570,37 @@ def edit_achievement(request):
         achievement_list = achievement_list,
         username         = username,
         awarder_name = awarder_name,
+    )
+
+@view_config(route_name='achievements.admin.achievement.delete', renderer='../templates/admin/delete_achievement.pt', permission='achievements_admin')
+def delete_achievement(request):
+    achievement_id = int(request.matchdict['achievement_id'])
+    the_achievement = config['DBSession'].query(Achievement).filter(Achievement.id == achievement_id).first()
+    
+    # TODO set permissions correctly
+    # the_user = config['get_user'](request)
+    
+    # editors = achievement_functions.editors_for_achievement(the_achievement)
+    # if the_user.id not in editors:
+    #     layout = get_renderer(config['layout']).implementation()
+        
+    #     return dict(
+    #         title                = 'Delete achievement type: %s' % the_achievement.name,
+    #         the_achievement = None,
+    #         message              = "You are not authorised to delete achievement types in this section",
+    #         layout               = layout,
+    #     )
+    
+    if 'form.submitted' in request.params:
+        config['DBSession'].delete(the_achievement)
+        
+        the_achievement = Achievement()
+        the_achievement.id = -1
+    
+    layout = get_renderer(config['layout']).implementation()
+    
+    return dict(
+        title           = 'Delete achievement: %s' % the_achievement.id if the_achievement != None else "Achievement deleted",
+        layout          = layout,
+        the_achievement = the_achievement,
     )
