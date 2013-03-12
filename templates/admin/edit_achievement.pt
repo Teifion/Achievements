@@ -71,11 +71,20 @@
             </table>
             <table border="0" cellspacing="0" cellpadding="5">
                 <tr>
-                    <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
+                    <td>
+                        <a tal:condition="the_achievement != None and the_achievement.id != -1" class="button" href="${request.route_url('achievements.admin.user', user_id=the_achievement.user)}">List user achievements</a>
+                        &nbsp;
+                    </td>
+                    <td>
+                        <a tal:condition="the_achievement != None and the_achievement.id != -1" class="button" href="${request.route_url('achievements.admin.achievement.add')}?user=${the_achievement.user}">New achievement</a>
+                        &nbsp;
+                    </td>
                     <td>
                         <a tal:condition="the_achievement != None and the_achievement.id != -1" class="button red_button" href="${request.route_url('achievements.admin.achievement.delete', achievement_id=the_achievement.id)}">Delete Achievement</a>
                         &nbsp;
                     </td>
+                    
+                    <td><input class="button" type="submit" name="form.submitted" value="Save" /></td>
                 </tr>
             </table>
         </form>

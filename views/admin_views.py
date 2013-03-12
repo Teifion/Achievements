@@ -499,7 +499,19 @@ def edit_achievement(request):
             the_achievement.awarder = request_user.id
             
             # Check the type, does it allow multiple types and does it exist for the user already?
-            atype = config['DBSession'].query(AchievementType.activation_count).filter(AchievementType.id == the_achievement.item)
+            atype = config['DBSession'].query(AchievementType.activation_count).filter(AchievementType.id == the_achievement.item).first()
+            
+            # If they can only get the achievement once then we want to overwrite the old one
+            # but only if the old one exists
+            if atype.activation_count > 0:
+                possible_existing = config['DBSession'].query(Achievement).filter(Achievement.item == the_achievement.item, Achievement.user == the_user.id).first()
+                
+                if possible_existing != None:
+                    the_achievement = possible_existing
+            
+            # They can get it multiple times, we don't care in the slightest
+            else:
+                pass
         
         day, month, year = request.params['awarded'].split("/")
         hour, mins = request.params['awarded_time'].split(":")
