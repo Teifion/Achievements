@@ -12,12 +12,14 @@
         
         <table border="0" cellspacing="0" cellpadding="5">
             <tr class="row2">
+                <th>&nbsp;</th>
                 <th>Achievement</th>
                 <th>Awarded</th>
                 <th>Progress</th>
                 <th>&nbsp;</th>
             </tr>
             <tr tal:repeat="a achievements" tal:attributes="class 'row%s' % (repeat.a.index%2)">
+                <td>${a[1].id}</td>
                 <td>${a[0].name}</td>
                 <td>${a[1].awarded.strftime("%Y/%m/%d %H:%M") if a[1].awarded != None else ""}</td>
                 <td>${a[1].activation_count}/${a[0].activation_count}</td>

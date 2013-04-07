@@ -288,6 +288,7 @@ def edit_achievement_type(request):
     if "achievement_type_id" not in request.matchdict:
         the_achievement_type = AchievementType()
         the_achievement_type.id = -1
+        the_achievement_type.subcategory = -1
         
     else:
         achievement_type_id = int(request.matchdict['achievement_type_id'])
@@ -335,10 +336,11 @@ def edit_achievement_type(request):
         AchievementSubCategory.category == AchievementCategory.id,
         "{:d} = ANY(achievement_sections.editors)".format(the_user.id),
     )
+    subcategory = int(request.params.get("subcategory", the_achievement_type.subcategory))
     for sc, c, s in config['DBSession'].query(AchievementSubCategory, AchievementCategory, AchievementSection).filter(*filters).order_by(AchievementSection.name.asc(), AchievementCategory.name.asc()):
         subcategories.append("<option value='{}' {}>{} {}: {}</option>".format(
             sc.id,
-            "selected='selected'" if c.id == int(request.params.get("category", -1)) else "",
+            "selected='selected'" if sc.id == subcategory else "",
             s.name, c.name, sc.name
         ))
     

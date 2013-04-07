@@ -57,6 +57,29 @@ def register(achievement_list):
             if a.lookup not in found:
                 config['DBSession'].add(a)
 
+def get_achievements(filters, user_id=-1, limit=20, order_by=[], achieved=True):
+    filters = list(filters)
+    filters.append(Achievement.item == AchievementType.id)
+    
+    if achieved:
+        filters.extend([
+            Achievement.activation_count >= AchievementType.activation_count,
+        ])
+    
+    if type(user_id) == int:
+        filters.extend([
+            Achievement.user == user_id,
+        ])
+    elif type(user_id) in (list, tuple):
+        filters.extend([
+            Achievement.user.in_(user_id),
+        ])
+    else:
+        if user_id != None:
+            raise Exception("No handler for user_id of type %s" % type(user_id))
+    
+    return config['DBSession'].query(Achievement, AchievementType).filter(*filters).order_by(*order_by).limit(limit)
+
 def give_achievement(achievement_lookup, user_id, acount=1):
     the_item = config['DBSession'].query(AchievementType).filter(AchievementType.lookup == achievement_lookup).limit(1).first()
     

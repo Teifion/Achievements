@@ -1,5 +1,15 @@
 <div metal:use-macro="layout">
     <style type="text/css" media="screen" metal:fill-slot="css">
+        .showcase
+        {
+            margin-bottom: 15px;
+        }
+        
+        .showcase h3
+        {
+            margin-bottom: 10px;
+        }
+        
         .showcase_icon
         {
             display: inline-block;
@@ -19,18 +29,16 @@
             float:left;
         }
         
-        .recents
+        .sections
         {
             float: right;
             width: 225px;
-            border: 0px solid #AAA;
             text-align:center;
         }
         
         .recent_wrapper
         {
             display: inline-block;
-            border: 0px solid #AAA;
             margin: 15px 5px;
             text-align: center;
         }
@@ -44,14 +52,12 @@
         {
             width: 75px;
             height: 75px;
-            border: 0px solid #CCC;
             margin-bottom: 5px;
             margin: 0 auto;
         }
         
-        .sections
+        .recents
         {
-            border: 0px solid #AAA;
             margin-right: 225px;
         }
     </style>
@@ -82,20 +88,18 @@
         <!-- Showcase for drag and drop -->
         <div class="showcase">
             <h3>Showcase</h3>
-            
             <div class="showcase_icon" tal:repeat="atype showcase">
-                <div class="edit_showcase_icon" tal:condition="user_id == request.user.id and False">
+                <img tal:condition="atype != None" src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(atype.lookup))}" width="150" height="150"/>
+                <div tal:condition="atype == None" style="width: 150px; height: 150px; background-color:#FFF;">
+                    &nbsp;
+                </div>
+                
+                <div class="edit_showcase_icon" tal:condition="user_id == request.user.id">
                     <div onclick="show_popup(${repeat.atype.index});" class="ui-state-default ui-corner-all icon_button" title="Edit trophy">
                         <span class="ui-icon ui-icon-wrench"></span>
                     </div>
                 </div>
-                
-                <img tal:condition="atype != None" src="${request.static_url('dashboard:static/images/achievements/{}_full.png'.format(atype.lookup))}" width="150" height="150"/>
             </div>
-        </div>
-        
-        <div id="showcase_editor" style="display:none;">
-            &nbsp;
         </div>
         
         <a href="${request.route_url('achievements.search')}" class="inbutton">Search achievements</a>
@@ -103,6 +107,13 @@
         <a href="${request.route_url('achievements.dev')}" tal:condition="'achievements_dev' in request.user.permissions()" class="inbutton">Achievements dev</a>
         <br /><br />
         
+        <!-- Main content block -->
+        <div class="sections">
+            <h3>Sections<h3>
+            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements.section', user_id=user_id, section_id=s.id)}">
+                ${s.name}
+            </a>
+        </div>
         
         <!-- Recents achievements -->
         <div class="recents">
@@ -116,13 +127,7 @@
             </div>
         </div>
         
-        <!-- Main content block -->
-        <div class="sections">
-            <h3>Sections<h3>
-            <a tal:repeat="s sections" class="button" href="${request.route_url('achievements.section', user_id=user_id, section_id=s.id)}" style="width: 400px; height 40px;">
-                ${s.name}
-            </a>
-        </div>
+        
         
         <div style="clear:both;">
             &nbsp;
