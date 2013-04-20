@@ -27,7 +27,7 @@
         <br /><br />
         
         <div tal:condition="sections == []">
-            There are currently no achievement sections. You will need to add a new one through the <a href="${request.route_url('achievements.admin.section.add')}">Add section</a> page.
+            There are currently no achievement sections. You will need to get a developer to add one and assign you as an editor.
         </div>
         
         <script type="text/javascript" charset="utf-8" tal:condition="sections != []">
